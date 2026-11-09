@@ -23,7 +23,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
   - Include example tests: `https://example.com/a` valid, `ftp://x.com` invalid, `example.com` invalid, `http://` invalid, `javascript:alert(1)` invalid, empty claim list passes.
   - Requirements: 2.1 to 2.6, 2.8, 7.2.
 
-- [ ] 4. Embargo rule (`src/core/embargo.ts`)
+- [x] 4. Embargo rule (`src/core/embargo.ts`)
   - Implement `parseInstant` (strict `YYYY-MM-DDTHH:mm:ss(.fff)?Z`, calendar-checked, returns epoch ms or `undefined`) and `isReleased(embargoMs | undefined, nowMs)` where release means no embargo or `nowMs >= embargoMs`.
   - Write `src/core/embargo.prop.test.ts` with fast-check: (c) for any embargo and any `t <= t2`, `isReleased(e, t)` implies `isReleased(e, t2)`; held strictly before the embargo and released exactly at it.
   - Include example tests for `parseInstant`: valid with and without milliseconds; rejects missing `Z`, a non-UTC offset, month 13, Feb 30, and an empty string.
