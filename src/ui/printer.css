@@ -1,0 +1,76 @@
+/* Printer controls and states (task 4). Tokens only.
+   Loaded after style.css, so these rules win at equal specificity. */
+
+/* Mute toggle and BELL label (nameplate tools slot).
+   --ink on --paper 14.09:1 for the lit BELL label. The slot has a fixed size,
+   so the label keeps its place while hidden and nothing shifts. */
+
+.mute-toggle {
+  flex: 0 0 auto;
+}
+
+.mute-toggle[aria-pressed="false"] {
+  color: var(--ink);
+  background: var(--accent);
+  font-weight: bold;
+}
+
+.bell-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+  color: var(--paper);
+  border: var(--border-control) solid transparent;
+  border-radius: var(--radius-control);
+  font-family: var(--font-paper);
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  visibility: hidden;
+}
+
+/* Static inverted state, not a blink. */
+.bell-label--on {
+  color: var(--ink);
+  background: var(--paper);
+  border-color: var(--paper);
+  visibility: visible;
+}
+
+/* Inert while an item prints. The dashed edge means it is not colour alone. */
+.btn[aria-disabled="true"],
+.btn[aria-disabled="true"]:hover {
+  color: var(--desk-muted);
+  background: transparent;
+  border-style: dashed;
+  font-weight: normal;
+  cursor: not-allowed;
+}
+
+/* Printed item states. The cut item keeps its place and its space before the
+   next item. The shift is a single 3px nudge for 120ms. Reduced motion never
+   gets the shift class, and the media query also removes the animation. */
+.item--cut {
+  margin-bottom: var(--space-5);
+}
+
+.item--shift {
+  animation: tear-shift var(--duration-fast) steps(1, end) 1;
+}
+
+@keyframes tear-shift {
+  from {
+    transform: translateY(3px);
+  }
+
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item--shift {
+    animation: none;
+  }
+}

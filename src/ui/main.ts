@@ -1,5 +1,6 @@
 import "./tokens.css";
 import "./style.css";
+import "./printer.css";
 import { composeWireItem, type Priority } from "../core/index";
 import {
   EXAMPLE_SOURCED,
@@ -11,6 +12,8 @@ import {
   type ClaimRow,
   type FormValues,
 } from "./form";
+import { createPrinter } from "./printer";
+import { createSound, type AudioContextLike } from "./sound";
 
 function byId<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
@@ -29,6 +32,97 @@ const claimsEl = byId<HTMLElement>("claims");
 const addClaimEl = byId<HTMLButtonElement>("add-claim");
 const noticeEl = byId<HTMLElement>("notice");
 const paperEl = byId<HTMLElement>("paper");
+const statusEl = byId<HTMLElement>("status");
+const toolsEl = byId<HTMLElement>("nameplate-tools");
+const printEl = byId<HTMLButtonElement>("print");
+const printInstantlyEl = byId<HTMLButtonElement>("print-instantly");
+const exampleSourcedEl = byId<HTMLButtonElement>("example-sourced");
+const exampleUnsourcedEl = byId<HTMLButtonElement>("example-unsourced");
+const printerSectionEl = document.querySelector<HTMLElement>(".printer") ?? paperEl;
+
+// ---- Sound, mute toggle, BELL label --------------------------------------
+
+const sound = createSound({
+  createContext: () =>
+    typeof AudioContext === "undefined"
+      ? undefined
+      : (new AudioContext() as unknown as AudioContextLike),
+  now: () => performance.now(), // clock for the clack rate limit only
+});
+
+const bellLabelEl = document.createElement("span");
+bellLabelEl.id = "bell-label";
+bellLabelEl.className = "bell-label";
+bellLabelEl.textContent = "BELL";
+
+// The accessible name stays "Mute sound"; only the visible text and
+// aria-pressed change.
+const muteEl = document.createElement("button");
+muteEl.type = "button";
+muteEl.id = "mute-toggle";
+muteEl.className = "btn mute-toggle";
+muteEl.setAttribute("aria-label", "Mute sound");
+
+function renderMute(): void {
+  const muted = sound.isMuted();
+  muteEl.setAttribute("aria-pressed", String(muted));
+  muteEl.textContent = muted ? "Muted" : "Sound on";
+}
+renderMute();
+
+muteEl.addEventListener("click", () => {
+  sound.unlock(); // same handler as the user gesture
+  sound.setMuted(!sound.isMuted());
+  renderMute();
+});
+toolsEl.append(bellLabelEl, muteEl);
+
+// First click or key press anywhere unlocks audio. It makes no sound.
+function unlockOnce(): void {
+  document.removeEventListener("pointerdown", unlockOnce);
+  document.removeEventListener("keydown", unlockOnce);
+  sound.unlock();
+}
+document.addEventListener("pointerdown", unlockOnce);
+document.addEventListener("keydown", unlockOnce);
+
+// ---- Printer -------------------------------------------------------------
+
+const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const phoneQuery = window.matchMedia("(min-width: 900px)");
+
+const printer = createPrinter({
+  paper: paperEl,
+  status: statusEl,
+  bellLabel: bellLabelEl,
+  sound,
+  reducedMotion: () => reducedMotionQuery.matches,
+  setTimeout: (fn, ms) => window.setTimeout(fn, ms),
+  clearTimeout: (id) => window.clearTimeout(id),
+});
+
+const INERT_BUTTONS = [printEl, exampleSourcedEl, exampleUnsourcedEl];
+
+printer.onBusyChange((busy) => {
+  for (const button of INERT_BUTTONS) {
+    if (busy) button.setAttribute("aria-disabled", "true");
+    else button.removeAttribute("aria-disabled");
+  }
+  if (busy) {
+    printInstantlyEl.hidden = false;
+  } else {
+    // Do not lose the focus position when the skip button goes away.
+    const hadFocus = document.activeElement === printInstantlyEl;
+    printInstantlyEl.hidden = true;
+    if (hadFocus) printEl.focus();
+  }
+  // Phone layout: bring the printer into view when a print starts and ends.
+  if (!phoneQuery.matches) {
+    printerSectionEl.scrollIntoView({ block: busy ? "start" : "nearest" });
+  }
+});
+
+printInstantlyEl.addEventListener("click", () => printer.skip());
 
 // ---- Claim rows ----------------------------------------------------------
 
@@ -146,10 +240,12 @@ function fillForm(values: FormValues): void {
   for (const r of rows) addRow(r.text, r.sourceUrl);
 }
 
-byId("example-sourced").addEventListener("click", () => {
+exampleSourcedEl.addEventListener("click", () => {
+  if (printer.isBusy()) return;
   fillForm(EXAMPLE_SOURCED);
 });
-byId("example-unsourced").addEventListener("click", () => {
+exampleUnsourcedEl.addEventListener("click", () => {
+  if (printer.isBusy()) return;
   fillForm(EXAMPLE_UNSOURCED);
 });
 
@@ -186,29 +282,11 @@ function showNotice(parts: { heading: string; entries?: { text: string; rowIndex
   noticeEl.focus();
 }
 
-// ---- Printing (instant; animation comes later) ---------------------------
-
-function printItem(text: string, stamp?: string): void {
-  byId("empty").hidden = true;
-  const item = document.createElement("div");
-  item.className = "item";
-  if (stamp !== undefined) {
-    item.classList.add("item--held");
-    const stampEl = document.createElement("div");
-    stampEl.className = "stamp";
-    stampEl.textContent = stamp;
-    item.append(stampEl);
-  }
-  const pre = document.createElement("pre");
-  pre.className = "item-text";
-  pre.textContent = text;
-  item.append(pre);
-  paperEl.append(item);
-  paperEl.scrollTop = paperEl.scrollHeight;
-}
+// ---- Print ---------------------------------------------------------------
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (printer.isBusy()) return; // Print is inert while an item prints
   const now = new Date().toISOString(); // the only clock read for the draft
   const { draft, rowIndexes, embargoInvalid } = formToDraft(readForm(), now);
 
@@ -219,6 +297,7 @@ form.addEventListener("submit", (event) => {
 
   const result = composeWireItem(draft);
   if (result.status === "REJECTED") {
+    // Nothing prints and nothing sounds.
     if (result.failures.length > 0) {
       const notice = rejectionNotice(result.failures, rowIndexes);
       showNotice({
@@ -234,9 +313,13 @@ form.addEventListener("submit", (event) => {
   clearNotice();
   if (result.status === "HELD") {
     const proof = heldProof(draft, result.releaseAt);
-    printItem(proof.text, proof.stamp);
+    printer.print({ kind: "held", stamp: proof.stamp, text: proof.text });
   } else {
-    printItem(result.item.text);
+    printer.print({
+      kind: "released",
+      text: result.item.text,
+      priority: draft.priority,
+    });
   }
 });
 
