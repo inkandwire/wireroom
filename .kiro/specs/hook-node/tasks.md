@@ -4,7 +4,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
 
 Rules for every task: add no dependency; POSIX sh only; do not change `src/`; follow `.kiro/steering/*.md` and `design.md`; keep the hook name, trigger, matcher and timeout.
 
-- [ ] 1. Node-finding claim gate wrapper
+- [x] 1. Node-finding claim gate wrapper
   - Write `scripts/run-claimgate.sh` as in `design.md`: find node, prepend its directory to PATH, run the gate from the repo root, append a UTC-stamped report to `.kiro/hook-logs/claim-gate.log`, keep the gate exit code, print `claim gate: node not found` to stderr and exit 127 when there is no node.
   - Change only `action.command` in `.kiro/hooks/claim-gate-on-save.json` to `sh scripts/run-claimgate.sh`.
   - Add `.kiro/hook-logs/` to `.gitignore`.
