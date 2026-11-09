@@ -1,7 +1,7 @@
 /* Printer controls and states (task 4). Tokens only.
    Loaded after style.css, so these rules win at equal specificity. */
 
-/* Mute toggle and BELL label (nameplate tools slot).
+/* Mute toggle and BELL label (printer bar tools slot).
    --ink on --paper 14.09:1 for the lit BELL label. The slot has a fixed size,
    so the label keeps its place while hidden and nothing shifts. */
 
@@ -95,4 +95,88 @@
   .caret {
     display: none;
   }
+}
+
+/* Printer housing, bar and platen (task 3). Tokens only. */
+
+.printer-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  background: var(--desk);
+  border: var(--border-control) solid var(--edge);
+  border-radius: var(--radius-housing);
+  box-shadow:
+    inset 0 2px 0 var(--desk-muted),
+    inset 0 -3px 0 var(--desk-dark);
+}
+
+/* The bar spans the housing width: plate on the left, tools on the right. */
+.printer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background: var(--desk-dark);
+  border-radius: var(--radius-bar);
+}
+
+.printer-bar > h2 {
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  color: var(--ink);
+  background: var(--accent);
+  border-radius: var(--radius-bar);
+  font-family: var(--font-paper);
+  line-height: 1.5;
+}
+
+.printer-bar > .nameplate-tools {
+  flex: 0 1 var(--tools-width);
+  width: auto;
+}
+
+.printer-body > .notice {
+  flex: 0 0 auto;
+}
+
+/* Platen: a CSS cylinder with brass end caps and a slot line. It sits above
+   the paper and overlaps it, so the paper is tucked under the roller. */
+.platen {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 0 0 auto;
+  height: var(--platen-h);
+  margin-bottom: calc(-1 * var(--slot-overlap));
+  pointer-events: none;
+}
+
+.platen-cap {
+  flex: 0 0 var(--cap-w);
+  background: linear-gradient(to bottom, var(--accent), var(--brass-dark));
+  border-radius: var(--radius-bar);
+}
+
+.platen-roll {
+  flex: 1 1 auto;
+  background: linear-gradient(
+    to bottom,
+    var(--roller-hi),
+    var(--roller-mid) 45%,
+    var(--roller-lo)
+  );
+  border-bottom: 1px solid var(--desk-dark);
+}
+
+/* Soft shadow cast by the roller onto the paper. */
+.platen::after {
+  content: "";
+  position: absolute;
+  inset: 100% 0 auto;
+  height: calc(var(--space-2) + var(--space-1));
+  background: linear-gradient(to bottom, var(--shadow-ink), transparent);
 }

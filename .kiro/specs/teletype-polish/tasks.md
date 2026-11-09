@@ -18,7 +18,7 @@ Rules for every task: add no dependency, no web font, no image; use CSS gradient
   - Requirements: 4.1 to 4.4, 5.1 to 5.3.
   - Maintainer checks: at 1440x900 with one claim row and an empty printer, `scrollHeight <= innerHeight` and Print and embargo are visible; adding 6 claim rows scrolls only the claims list; a long printed item does not change page height; at 390x844 one column and `scrollWidth <= innerWidth`. Sends the measured values.
 
-- [ ] 3. Platen and paper feed (fix 3)
+- [x] 3. Platen and paper feed (fix 3)
   - Files: `index.html` (printer housing wrapper, bar, platen; `#nameplate-tools` moved into the bar, same id), `src/ui/printer.css`, `src/ui/style.css` (header grid without the tools area), `src/ui/tokens.css` (roller, brass, shadow tokens).
   - Housing, rounded-square bar, CSS-only platen with brass caps and slot line, paper tucked under the roller with a soft shadow and no gap. `.paper-slot` stays in the DOM, hidden. Check the HOLD stamp and the rejection notice on the new housing.
   - Requirements: 6.1 to 6.3, 7.1 to 7.4, 8.1, 8.2.

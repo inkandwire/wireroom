@@ -15,6 +15,22 @@
      is about 10.8:1 (more than --paper on --desk, 8.27:1). */
   --desk-dark: #232b26;
 
+  /* Printer housing and platen (task 3). All decorative: no text sits on the
+     roller or caps. The printer bar uses --desk-dark with --paper text
+     (about 10.8:1) and the plate uses --ink on --accent (8.84:1). Gradients
+     only, no images. */
+  --brass-dark: #9a7220;
+  --roller-hi: #4a4f4b;
+  --roller-mid: #232826;
+  --roller-lo: #0f1210;
+  --shadow-ink: rgba(15, 18, 16, 0.45);
+  --radius-housing: 2px;
+  --radius-bar: 4px;
+  --slot-overlap: 6px;
+  --platen-h: 28px;
+  --cap-w: 14px;
+  --printer-max-w: 760px;
+
   --font-paper: "Courier New", Courier, "Liberation Mono", "DejaVu Sans Mono",
     ui-monospace, monospace;
   --font-ui: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
@@ -171,8 +187,8 @@
     0 100%
   );
 
-  /* Reserved width of the nameplate's right-hand slot (mute toggle and BELL
-     label, added by a later task). Fixed so filling it does not shift layout. */
+  /* Reserved width of the tools slot in the printer bar (mute toggle and BELL
+     label). Fixed so filling it does not shift layout. */
   --tools-width: 176px;
 
   /* Layout (task 2 and fix pass 1).
