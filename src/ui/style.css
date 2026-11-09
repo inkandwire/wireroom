@@ -414,21 +414,25 @@ textarea {
   border-radius: var(--radius-stamp) var(--radius-stamp) 0 0;
 }
 
+/* The roll is a scrolling region on the desk. It has no paper colour of its
+   own and no minimum height: each printed item is its own sheet and the region
+   is exactly as tall as its sheets (up to 70vh), so no blank paper sits under
+   the last -30-. */
 .paper {
   max-height: 70vh;
-  min-height: var(--space-7);
-  padding: var(--paper-pad);
   overflow: auto;
   scrollbar-gutter: stable;
   color: var(--ink);
-  background: var(--paper);
-  border-radius: 0 0 var(--radius-paper) var(--radius-paper);
   font: inherit;
   white-space: pre;
 }
 
 .empty {
+  min-height: var(--empty-min-height);
+  padding: var(--paper-pad);
   color: var(--muted);
+  background: var(--paper);
+  border-radius: 0 0 var(--radius-paper) var(--radius-paper);
   white-space: normal;
 }
 
@@ -436,8 +440,21 @@ textarea {
   margin: 0 0 var(--space-1);
 }
 
+/* One sheet per item. It is at least as wide as the roll and as wide as its
+   longest line, so the paper colour stays behind the text when the roll
+   scrolls sideways. The bottom edge is straight while the item prints. The
+   perforation and the torn edge come with .item--cut (printer.css). */
 .item {
-  margin-bottom: var(--space-5);
+  width: max-content;
+  min-width: 100%;
+  padding: var(--paper-pad);
+  color: var(--ink);
+  background: var(--paper);
+}
+
+/* The desk shows between two sheets. */
+.item + .item {
+  margin-top: var(--space-5);
 }
 
 .item-text {

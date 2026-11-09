@@ -32,6 +32,7 @@ export const STATUS_CLEAR_MS = 1000;
 export const BELL_LABEL_ON_CLASS = "bell-label--on";
 export const ITEM_CUT_CLASS = "item--cut";
 export const ITEM_SHIFT_CLASS = "item--shift";
+export const CARET_CLASS = "caret";
 
 export function createPrinter(deps: PrinterDeps): Printer {
   const listeners: Array<(busy: boolean) => void> = [];
@@ -50,6 +51,7 @@ export function createPrinter(deps: PrinterDeps): Printer {
   let clock = 0; // virtual time of the last applied step, not a clock read
   let itemEl: HTMLElement | undefined;
   let textNode: Text | undefined;
+  let caretEl: HTMLElement | undefined; // print head, only while typing
   let statusText = "";
   let reduced = false;
 
@@ -97,6 +99,8 @@ export function createPrinter(deps: PrinterDeps): Printer {
 
   const finish = (): void => {
     clearTyping();
+    caretEl?.remove(); // the print head leaves when the item is done
+    caretEl = undefined;
     events = [];
     index = 0;
     itemEl = undefined;
@@ -173,6 +177,17 @@ export function createPrinter(deps: PrinterDeps): Printer {
     pre.className = "item-text";
     const node = doc.createTextNode("");
     pre.append(node);
+    // Static block caret marking where the next character lands. It is a
+    // sibling of the text node, so the text content that is printed and read
+    // is unchanged by it apart from the caret having no text of its own.
+    // Never created under reduced motion, where the item appears at once.
+    if (!reduced) {
+      const caret = doc.createElement("span");
+      caret.className = CARET_CLASS;
+      caret.setAttribute("aria-hidden", "true");
+      pre.append(caret);
+      caretEl = caret;
+    }
     item.append(pre);
     deps.paper.append(item);
 

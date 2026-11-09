@@ -89,7 +89,7 @@ document.addEventListener("keydown", unlockOnce);
 // ---- Printer -------------------------------------------------------------
 
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-const phoneQuery = window.matchMedia("(min-width: 900px)");
+const desktopQuery = window.matchMedia("(min-width: 900px)");
 
 const printer = createPrinter({
   paper: paperEl,
@@ -117,7 +117,7 @@ printer.onBusyChange((busy) => {
     if (hadFocus) printEl.focus();
   }
   // Phone layout: bring the printer into view when a print starts and ends.
-  if (!phoneQuery.matches) {
+  if (!desktopQuery.matches) {
     printerSectionEl.scrollIntoView({ block: busy ? "start" : "nearest" });
   }
 });
