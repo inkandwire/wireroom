@@ -15,3 +15,11 @@ export { checkClaims, isValidSourceUrl } from "./claimGate";
 export { isReleased, parseInstant } from "./embargo";
 export { slugFromHeadline, formatDateline, composeWireItem } from "./compose";
 export { wireItemToJson } from "./wireJson";
+export {
+  escapeXml,
+  toRss,
+  toJsonFeed,
+  entriesFromResult,
+  type FeedEntry,
+  type FeedMeta,
+} from "./feed";

@@ -4,7 +4,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
 
 Rules for every task: add no dependency (plain string builders, no XML or feed library); named exports only; follow `.kiro/steering/*.md` and `design.md`; `src/core` has no clock, randomness, DOM or network; do not change `wireItemToJson`, `composeWireItem` or `printer.ts`.
 
-- [ ] 1. Core serializers (`src/core/feed.ts`, `src/core/index.ts`, `src/core/feed.test.ts`)
+- [x] 1. Core serializers (`src/core/feed.ts`, `src/core/index.ts`, `src/core/feed.test.ts`)
   - Implement `FeedEntry`, `FeedMeta`, `toRss`, `toJsonFeed` and `escapeXml` exactly as in design.md, plus the small pure helper that turns a `ComposeResult` and a `publishedAt` into `FeedEntry[]` (empty for `HELD` and `REJECTED`). Export them from `src/core/index.ts`.
   - Write `src/core/feed.test.ts`: the tiny test-only strict XML well-formedness checker; required RSS elements per item; one RSS and one JSON Feed golden example built from `EXAMPLE_SOURCED` and `EXAMPLE_UNSOURCED` (with the missing URL filled in) via `composeWireItem`, or from hand-made entries; empty list; a list built from a `HELD` result is empty; newest first and tie order; escaping of `& < > " '` and removal of forbidden control characters; JSON Feed required fields and types, `external_url` only with a source, `feed_url` only with `selfUrl`.
   - Maintainer: runs `npm test` and `npm run build`, reports failures.
