@@ -250,7 +250,7 @@ export function createPrinter(deps: PrinterDeps): Printer;
     <section class="printer" aria-labelledby="printer-title">
       controls row: Print instantly, mute toggle, BELL label
       notice container (role="alert", tabindex="-1", empty)
-      <div class="paper" aria-live="off" aria-label="Printed wire items" tabindex="0"> empty state </div>
+      <div class="paper" role="region" aria-live="off" aria-label="Printed wire items, scrolls sideways and down" tabindex="0"> empty state </div>
     </section>
     <div class="visually-hidden" role="status" aria-live="polite"></div>
   </main>
@@ -258,13 +258,16 @@ export function createPrinter(deps: PrinterDeps): Printer;
 </body>
 ```
 
-Tab order follows reading order: form fields, claims, Add claim, examples, Print, then Print instantly, mute toggle, the notice links, the paper. The paper has `tabindex="0"` and an `aria-label` so a user can scroll it by keyboard.
+Tab order follows reading order: form fields, claims, Add claim, examples, Print, then Print instantly, mute toggle, the notice links, the paper. The paper has `tabindex="0"`, `role="region"` and an `aria-label` so a user can scroll it by keyboard.
 
 ## Styling
 
 - `tokens.css`: one `:root` block with every token in `design.md` (colours, `--font-paper`, `--font-ui`, `--space-1..7`, radii, border widths, transition durations).
 - `style.css`: tokens only. Two-column grid from 900px with `grid-template-columns: minmax(320px, 400px) minmax(0, 1fr)`; `.app > * { min-width: 0 }`.
-- Paper: `container-type: inline-size`; `font-size: clamp(8px, calc((100cqi - 2 * var(--space-4)) / 42.8), 16px)`; `line-height: 1.35`; `white-space: pre`; `overflow-x: auto`; `overflow-y: auto`; torn bottom edge by `clip-path: polygon(...)` zigzag with 6px teeth.
+- Paper: `container-type: inline-size`; `font-size: clamp(12px, calc((100cqi - 2 * var(--paper-pad) - var(--scrollbar-room)) / 42.8), 16px)` (maintainer decision: the floor is 12px, not 8px); `line-height: 1.35`; `white-space: pre`; `overflow-x: auto`; `overflow-y: auto`; torn bottom edge by `clip-path: polygon(...)` zigzag with 6px teeth. Where 69 columns do not fit at 12px (a 390px phone), the paper box scrolls sideways inside itself; `.paper-wrap` has `max-width: 100%`, so the 69ch width never forces page-level sideways scroll (`document.documentElement.scrollWidth <= innerWidth` at 390px). Lines are never re-wrapped.
+- Claim rows (maintainer decision, measured: at 1440px the claim text and URL inputs were only about 140px each in a three-column row): the form is a size container; the URL input stacks under the claim text (one column, full width) whenever the form column is narrower than 560px (`@container form (min-width: 560px)` switches to the three-column row). The Remove button stays reachable and 44px tall.
+- Priority select (maintainer decision): keep the native `<select>`, no custom dropdown. Style only: `appearance: none`, `--field` background, `--edge` border, `--ink` text, 44px minimum height, focus ring, same look as the text inputs, and a CSS-only arrow (a bordered triangle on the wrapper, tokens only, no image, no gradient). The native option list stays.
+- Examples: the two example buttons stack full width under 480px, so their labels stay on one line.
 - Focus: `:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }`.
 - Reduced motion: `@media (prefers-reduced-motion: reduce)` removes transitions and transforms (the stamp keeps its static -3deg rotation, since it is not motion).
 - Transitions list properties and last at most 120 ms (`transform 120ms`, `background-color 120ms`).
@@ -278,6 +281,7 @@ Tab order follows reading order: form fields, claims, Add claim, examples, Print
 5. The thunk plays on the tear only. Per-line carriage-return sound is not added, to stay inside the "at most one thunk per cut" rule in `design.md`.
 6. Print and example buttons use `aria-disabled` while printing, not `disabled`, so keyboard focus is not lost when printing starts.
 7. Sound noise uses a fixed-seed LCG instead of `Math.random`, so the module follows the "no randomness" rule even though it is not in `src/core`.
+8. Paper font floor is 12px (maintainer decision), so on a phone the paper box scrolls sideways inside itself instead of shrinking the type to 8px.
 
 ## Correctness properties (fast-check)
 
@@ -334,5 +338,6 @@ The fake records every created node, every `connect`, every `start` and every ga
 ## Risks
 
 - The `42.8` font-size constant is a safe upper bound for the mono stack; if a fallback font is wider, the paper box scrolls sideways (requirement 15.6) instead of breaking the page.
-- `clip-path` and `cqi` need a current browser; older browsers fall back to a flat edge and the `16px` base font, with sideways paper scroll.
+- `clip-path` and `cqi` need a current browser; older browsers fall back to a flat edge and the 12px base font, with sideways paper scroll.
+- Container queries (`@container`) need a current browser; older browsers keep the stacked claim row, which is the safe layout.
 - Autoplay: sound is created only in a user gesture, so a muted first run is silent by design.

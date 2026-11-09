@@ -44,6 +44,18 @@
   --scrollbar-room: var(--space-4);
   --slot-height: 8px;
 
+  /* Paper font size range. The floor is 12px (maintainer decision): below it
+     the paper box scrolls sideways instead of shrinking the type. */
+  --paper-font-min: 12px;
+  --paper-font-max: 16px;
+
+  /* Height limits so a tall roll or a long notice never pushes the page. */
+  --paper-max-height: 70vh;
+  --notice-max-height: 40vh;
+
+  /* CSS-only select arrow (a bordered triangle). */
+  --arrow-size: var(--space-2);
+
   /* Empty-state message height. The printed sheets size to their content. */
   --empty-min-height: calc(2 * var(--space-7));
 

@@ -100,7 +100,11 @@ h2 {
   margin-bottom: var(--space-3);
 }
 
+/* The form is a size container: claim rows pick their layout from the width
+   of the form column, not from the viewport. */
 #compose-form {
+  container-type: inline-size;
+  container-name: form;
   margin-bottom: var(--space-3);
 }
 
@@ -164,6 +168,7 @@ legend {
   line-height: 1.25;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 fieldset {
@@ -208,6 +213,35 @@ textarea {
   resize: vertical;
 }
 
+/* Priority: the native select, styled like the text inputs. The arrow is a
+   bordered triangle on the wrapper (no image, no gradient). The native option
+   list is left alone. --ink on --field 15.81:1. */
+.select-wrap {
+  position: relative;
+}
+
+.select-wrap > select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: calc(var(--space-3) + 2 * var(--arrow-size) + var(--space-2));
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.select-wrap::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  width: 0;
+  height: 0;
+  border-left: var(--arrow-size) solid transparent;
+  border-right: var(--arrow-size) solid transparent;
+  border-top: var(--arrow-size) solid var(--ink);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
 .hint {
   margin: 0 0 var(--space-2);
   color: var(--desk-muted);
@@ -243,7 +277,10 @@ textarea {
   background: var(--accent);
 }
 
-/* Claim rows: stacked on phone, text + source URL + Remove in one row on desktop. */
+/* Claim rows: claim text, then the source URL under it, then Remove, all in one
+   column. When the form column is 560px or wider (container query on the form,
+   not the viewport) the text, URL and Remove sit in one row.
+   At 1440px the form column is 400px, so it stays stacked there. */
 
 .claim-row {
   display: grid;
@@ -262,7 +299,7 @@ textarea {
   justify-self: start;
 }
 
-@media (min-width: 900px) {
+@container form (min-width: 560px) {
   .claim-row {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
     align-items: end;
@@ -272,13 +309,8 @@ textarea {
     margin-bottom: 0;
   }
 
-  .claim-row .field input {
-    padding-inline: var(--space-2);
-  }
-
   .claim-row > .claim-remove {
     justify-self: end;
-    padding-inline: var(--space-2);
   }
 }
 
@@ -319,6 +351,13 @@ textarea {
   line-height: 1.25;
 }
 
+/* Narrow phones: one example button per row, full width, labels on one line. */
+@media (max-width: 479px) {
+  .actions-examples {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .examples-hint {
   margin-bottom: var(--space-3);
 }
@@ -354,10 +393,15 @@ textarea {
 
 /* Printer */
 
+/* --stamp on --field 6.28:1. With many entries the notice scrolls inside its
+   own box (it can take focus) so it never pushes the paper off screen. */
 .notice {
   display: none;
+  max-height: var(--notice-max-height);
   margin-bottom: var(--space-3);
   padding: var(--space-3) var(--space-4);
+  overflow-y: auto;
+  overflow-wrap: anywhere;
   color: var(--stamp);
   background: var(--field);
   border: var(--border-control) solid var(--stamp);
@@ -388,10 +432,15 @@ textarea {
 
 /* The stage is the size container. The paper wrap sets the font size from the
    stage width (cq units resolve against an ancestor container, never the
-   element itself) and is exactly as wide as 69 columns plus padding, centred.
-   42.8 is 69 columns times 0.62em, a safe upper bound for the mono stack. */
+   element itself) and is exactly as wide as 69 columns plus padding, centred,
+   but never wider than the stage (max-width), so it cannot widen the page.
+   42.8 is 69 columns times 0.62em, a safe upper bound for the mono stack.
+   The font floor is 12px: where 69 columns do not fit at 12px (a 390px phone),
+   the paper box scrolls sideways inside itself and the page does not. */
 .paper-stage {
   container-type: inline-size;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .paper-wrap {
@@ -399,11 +448,11 @@ textarea {
   max-width: 100%;
   margin-inline: auto;
   font-family: var(--font-paper);
-  font-size: 11px;
+  font-size: var(--paper-font-min);
   font-size: clamp(
-    8px,
+    var(--paper-font-min),
     calc((100cqi - 2 * var(--paper-pad) - var(--scrollbar-room)) / 42.8),
-    16px
+    var(--paper-font-max)
   );
   line-height: 1.35;
 }
@@ -414,12 +463,13 @@ textarea {
   border-radius: var(--radius-stamp) var(--radius-stamp) 0 0;
 }
 
-/* The roll is a scrolling region on the desk. It has no paper colour of its
-   own and no minimum height: each printed item is its own sheet and the region
-   is exactly as tall as its sheets (up to 70vh), so no blank paper sits under
-   the last -30-. */
+/* The roll is a scrolling region on the desk (both directions, its own
+   scrollbars). It has no paper colour of its own and no minimum height: each
+   printed item is its own sheet and the region is exactly as tall as its
+   sheets (up to the max height), so no blank paper sits under the last -30-. */
 .paper {
-  max-height: 70vh;
+  max-width: 100%;
+  max-height: var(--paper-max-height);
   overflow: auto;
   scrollbar-gutter: stable;
   color: var(--ink);

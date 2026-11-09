@@ -24,12 +24,14 @@
             </div>
             <div class="field">
               <label for="priority">Priority</label>
-              <select id="priority" name="priority">
-                <option value="FLASH">FLASH</option>
-                <option value="BULLETIN">BULLETIN</option>
-                <option value="URGENT">URGENT</option>
-                <option value="ROUTINE" selected>ROUTINE</option>
-              </select>
+              <div class="select-wrap">
+                <select id="priority" name="priority">
+                  <option value="FLASH">FLASH</option>
+                  <option value="BULLETIN">BULLETIN</option>
+                  <option value="URGENT">URGENT</option>
+                  <option value="ROUTINE" selected>ROUTINE</option>
+                </select>
+              </div>
             </div>
           </div>
           <div class="field">
@@ -92,7 +94,7 @@
         <div class="paper-stage">
           <div class="paper-wrap">
             <div class="paper-slot" aria-hidden="true"></div>
-            <div id="paper" class="paper" aria-live="off" aria-label="Printed wire items" tabindex="0">
+            <div id="paper" class="paper" role="region" aria-live="off" aria-label="Printed wire items, scrolls sideways and down" tabindex="0">
               <div id="empty" class="empty">
                 <p>Nothing printed yet.</p>
                 <p>Fill in the form and press Print, or try an example.</p>
