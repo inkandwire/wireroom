@@ -14,3 +14,9 @@ Run it by hand: `npx vite-node src/cli/claimgate.ts drafts`
 The hook calls `sh scripts/run-claimgate.sh`, which finds node even under a clean PATH, runs the gate from the repo root and keeps its exit code.
 If node is in an unusual place, set `NODE=/path/to/node`; with no node it prints `claim gate: node not found` and exits 127.
 Every run appends a UTC-stamped report to `.kiro/hook-logs/claim-gate.log` (git-ignored).
+
+## Source check (MCP)
+
+`.kiro/settings/mcp.json` adds the MCP `fetch` server, so Kiro can check that each `sourceUrl` in a draft resolves (rules in `.kiro/steering/source-check.md`).
+It needs `uvx` and network access; the `command` path in `mcp.json` is machine specific, so edit it on another machine.
+For non-interactive runs use `kiro-cli chat --v3 --no-interactive --trust-tools=fs_read,fs_write,@fetch`.
