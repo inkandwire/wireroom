@@ -105,6 +105,7 @@
 /* Printer housing, bar and platen (task 3). Tokens only. */
 
 .printer-body {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -115,6 +116,33 @@
   box-shadow:
     inset 0 2px 0 var(--desk-muted),
     inset 0 -3px 0 var(--desk-dark);
+}
+
+/* Two brass rivets at the bottom corners of the housing. Decoration only:
+   radial-gradient circles drawn on pseudo-elements, no text, no layout
+   effect (absolutely positioned inside the bottom padding). */
+.printer-body::before,
+.printer-body::after {
+  content: "";
+  position: absolute;
+  bottom: var(--space-1);
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    var(--accent),
+    var(--brass-dark) 75%
+  );
+  pointer-events: none;
+}
+
+.printer-body::before {
+  left: var(--space-1);
+}
+
+.printer-body::after {
+  right: var(--space-1);
 }
 
 /* The bar spans the housing width: plate on the left, tools on the right. */
@@ -146,6 +174,17 @@
 
 .printer-body > .notice {
   flex: 0 0 auto;
+}
+
+/* Paper-catch tray: the area under and beside the paper is a dark recessed
+   floor with an inner shadow along its top edge, so the paper looks like it
+   hangs into the machine. Decoration only, no padding or border, so the
+   layout metrics do not change. */
+.paper-stage {
+  background: var(--desk-dark);
+  border-radius: var(--radius-control);
+  box-shadow: inset 0 var(--space-3) var(--space-2) calc(-1 * var(--space-1))
+    var(--shadow-ink);
 }
 
 /* Platen: a CSS cylinder with brass end caps and a slot line. It sits above

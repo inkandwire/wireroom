@@ -29,7 +29,8 @@ h2 {
   text-transform: uppercase;
 }
 
-/* Nameplate (--ink on --accent 8.84:1, --desk-muted on --desk 6.00:1) */
+/* Nameplate (--ink on --accent 8.84:1, --desk-muted on --desk 6.00:1).
+   A solid 2px --brass-dark rule runs under the bar across the full width. */
 
 .nameplate {
   display: grid;
@@ -40,7 +41,7 @@ h2 {
   align-items: center;
   gap: var(--space-2) var(--space-3);
   padding: var(--space-3) var(--space-2);
-  border-bottom: var(--border-control) solid var(--edge);
+  border-bottom: var(--border-control) solid var(--brass-dark);
 }
 
 .nameplate-title {
@@ -144,12 +145,18 @@ h2 {
     flex-direction: column;
   }
 
+  /* Title on the left, tagline at the right end of the bar. */
   .nameplate {
     flex: 0 0 auto;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas: "plate tagline";
     gap: var(--space-4);
     padding: var(--space-2) var(--space-5);
+  }
+
+  .nameplate-tagline {
+    justify-self: end;
+    text-align: right;
   }
 
   .nameplate-tools {
@@ -175,7 +182,7 @@ h2 {
 
   .compose-head {
     flex: 0 0 auto;
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-1);
   }
 
   /* Heading and example buttons share one row when they fit. */
@@ -641,7 +648,7 @@ textarea {
   }
 
   #compose-form .field {
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-1);
   }
 
   #compose-form .hint {
