@@ -10,7 +10,7 @@ Rules for every task: add no dependency (plain string builders, no XML or feed l
   - Maintainer: runs `npm test` and `npm run build`, reports failures.
   - Requirements: 1.1 to 1.3, 2.1 to 2.3, 3.1 to 3.4, 4.1 to 4.3, 5.1 to 5.5, 6.1, 10.1.
 
-- [ ] 2. Property tests (`src/core/feed.prop.test.ts`, fixes in `src/core/feed.ts`)
+- [x] 2. Property tests (`src/core/feed.prop.test.ts`, fixes in `src/core/feed.ts`)
   - Write the fast-check properties from design.md for any list of released entries: RSS well-formed per the checker; JSON Feed parses; item counts equal the entry count in both; every claim text and every source URL appears in both outputs (RSS after unescaping); output deterministic; entries newest first; hostile text (`& < > " '`, emoji, control characters) keeps RSS well-formed and round-trips in JSON. Share the checker from `feed.test.ts` by moving it to a test-only helper file in `src/core` if needed.
   - Fix any defect the properties find in `src/core/feed.ts`.
   - Maintainer: runs `npm test`, reports failures with the fast-check seed and counterexample.
