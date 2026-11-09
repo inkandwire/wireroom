@@ -4,7 +4,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
 
 Rules for every task: add files only in `src/ui` (plus `index.html` at the root); do not change `src/core`; import the core only from `src/core/index.ts`; add no dependency; use named exports only; follow `.kiro/steering/design.md` and `tech.md`.
 
-- [ ] 1. Playback timeline (`src/ui/playback.ts`)
+- [x] 1. Playback timeline (`src/ui/playback.ts`)
   - Implement the pure module exactly as in design.md: `PlaybackEvent` (`char`, `newline`, `bell`, `tear`), the delay constants (14, 8, 40, 140 ms, `MAX_PLAY_MS = 6000`, `BELL_GAP_MS = 600`), `charDelayMs`, `bellCount`, `buildTimeline(text, priority, reducedMotion)` and `textAt(events, timeMs)`. No DOM, no clock, no randomness.
   - Scale all times down with `Math.floor` when the raw total exceeds 6000 ms. Put the `tear` event last. Place FLASH bells at 0 and `min(600, tearAt)`, the BULLETIN bell at 0. With `reducedMotion` every event is at time 0.
   - Write `src/ui/playback.prop.test.ts` with fast-check, for the properties in design.md (a): P-a1 join gives back the text; P-a2 times never decrease and are non-negative integers; P-a3 last time at most 6000 (use long texts too); P-a4 reduced motion puts everything at 0 and `textAt(events, 0)` is the text; P-a5 bell counts 2 / 1 / 0 / 0, also under reduced motion; P-a6 exactly one `tear`, last, not before any other event; P-a7 deterministic; P-a8 unscaled times for short texts; P-a9 `textAt` at the last time equals the text and is always a prefix.
