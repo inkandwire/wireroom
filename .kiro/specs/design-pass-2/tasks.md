@@ -9,7 +9,7 @@ Rules for every task: add no dependency, no web font, no image file; no `transit
   - Requirements: 1.1 to 1.3, 7.1, 9.1 to 9.3.
   - Maintainer checks: DOM: `.paper-tray` exists with `aria-hidden="true"`, `document.querySelectorAll('.rivet').length === 4`, each rivet is inside the housing rectangle near a different corner, `scrollHeight <= innerHeight` at 1440x900. Screenshot: empty printer shows the tray and not a bare dark block; with one short printed item the area below it shows paper folded into the tray; two printed items are stacked in order; four brass rivets are visible; 390x844 intact.
 
-- [ ] 2. Date and time wells, feed key toolbar (fixes 2 and 3)
+- [x] 2. Date and time wells, feed key toolbar (fixes 2 and 3)
   - Files: `index.html` (`#nameplate-tools` gets `role="toolbar"` and `aria-label`), `src/ui/main.ts` (add class `feed-key` to the three keys only), `src/ui/style.css` (wells, icons, toolbar), `src/ui/printer.css` (remove old key sizing that conflicts).
   - Requirements: 2.1, 2.2, 3.1 to 3.3, 9.1, 9.2.
   - Maintainer checks: DOM: `#embargo-date.type === "date"`, `#embargo-time.type === "time"`, computed `font-family` is the paper mono stack, border width 2px; `[role="toolbar"]` has an `aria-label` and contains `#mute-toggle`, `#export-rss`, `#export-json` with the same `offsetHeight` and `top` at 1440x900; at 390x844 keys are at least 44px high and the page has no horizontal scroll. Screenshot: recessed date and time wells with themed icons; one even row of three keys; the printed export keys enabled and disabled look equal in height.

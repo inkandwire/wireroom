@@ -222,6 +222,15 @@
   --tray-min-h: 40px;
   --rivet-size: var(--space-2);
 
+  /* Date and time wells and the feed key toolbar (design-pass-2, task 2).
+     No new colours: the icons are drawn in the --ink tone (see the SVG data
+     URIs in style.css), the keys reuse --key, --paper and --edge.
+     --icon-size: width and height of the calendar and clock icons.
+     --feed-key-pad-x: horizontal padding of a feed key, a little tighter than
+     a normal .btn so three keys fit in one row on the printer bar. */
+  --icon-size: 20px;
+  --feed-key-pad-x: var(--space-3);
+
   /* Keys (task 4): the keycap bottom edge and the press travel. */
   --key-edge: 2px;
   --key-edge-print: 3px;

@@ -66,11 +66,12 @@ bellLabelEl.className = "bell-label";
 bellLabelEl.textContent = "BELL";
 
 // The accessible name stays "Mute sound"; only the visible text and
-// aria-pressed change.
+// aria-pressed change. The three feed keys (Mute, Export RSS, Export JSON)
+// share the .feed-key class so they have the same height.
 const muteEl = document.createElement("button");
 muteEl.type = "button";
 muteEl.id = "mute-toggle";
-muteEl.className = "btn mute-toggle";
+muteEl.className = "btn feed-key mute-toggle";
 muteEl.setAttribute("aria-label", "Mute sound");
 
 function renderMute(): void {
@@ -95,14 +96,14 @@ const sessionEntries: FeedEntry[] = [];
 const exportRssEl = document.createElement("button");
 exportRssEl.type = "button";
 exportRssEl.id = "export-rss";
-exportRssEl.className = "btn export-key";
+exportRssEl.className = "btn feed-key export-key";
 exportRssEl.textContent = "Export RSS";
 exportRssEl.setAttribute("aria-disabled", "true");
 
 const exportJsonEl = document.createElement("button");
 exportJsonEl.type = "button";
 exportJsonEl.id = "export-json";
-exportJsonEl.className = "btn export-key";
+exportJsonEl.className = "btn feed-key export-key";
 exportJsonEl.textContent = "Export JSON feed";
 exportJsonEl.setAttribute("aria-disabled", "true");
 
@@ -132,7 +133,10 @@ function downloadExport(kind: ExportKind): void {
 exportRssEl.addEventListener("click", () => downloadExport("rss"));
 exportJsonEl.addEventListener("click", () => downloadExport("json"));
 
-toolsEl.append(bellLabelEl, muteEl, exportRssEl, exportJsonEl);
+// The BELL label sits in the printer bar just before the toolbar, outside it.
+// The toolbar holds only the three feed keys.
+toolsEl.before(bellLabelEl);
+toolsEl.append(muteEl, exportRssEl, exportJsonEl);
 
 // First click or key press anywhere unlocks audio. It makes no sound.
 function unlockOnce(): void {

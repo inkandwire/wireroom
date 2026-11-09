@@ -93,8 +93,10 @@
           <i class="rivet rivet--br" aria-hidden="true"></i>
           <div class="printer-bar">
             <h2 id="printer-title">Printer</h2>
-            <!-- The BELL label and the mute toggle are added here by src/ui/main.ts. -->
-            <div id="nameplate-tools" class="nameplate-tools"></div>
+            <!-- src/ui/main.ts puts the BELL label before this toolbar (outside
+                 it) and the three feed keys inside it: Mute, Export RSS,
+                 Export JSON feed. -->
+            <div id="nameplate-tools" class="nameplate-tools" role="toolbar" aria-label="Feed keys"></div>
           </div>
           <div id="notice" class="notice" role="alert" tabindex="-1"></div>
           <div class="platen" aria-hidden="true"><i class="platen-cap"></i><i class="platen-roll"></i><i class="platen-cap"></i></div>

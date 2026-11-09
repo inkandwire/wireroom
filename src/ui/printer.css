@@ -1,18 +1,14 @@
 /* Printer controls and states (task 4). Tokens only.
    Loaded after style.css, so these rules win at equal specificity. */
 
-/* Mute toggle and BELL label (printer bar tools slot).
-   --ink on --paper 14.09:1 for the lit BELL label. The slot has a fixed size,
-   so the label keeps its place while hidden and nothing shifts. */
+/* Mute toggle and BELL label (printer bar).
+   --ink on --paper 14.09:1 for the lit BELL label. The label keeps its place
+   while hidden (visibility, not display), so nothing shifts. */
 
-/* The toggle is a small grey-green key, the same as the other secondary keys
-   (.btn in style.css: --key fill, --paper text 5.65:1, 2px bottom edge, press).
-   Only the sizing is set here. "Sound on" adds a brass border and bold text,
-   so the state is not colour alone. */
-.mute-toggle {
-  flex: 0 0 auto;
-}
-
+/* The toggle is one of the three feed keys (.btn.feed-key in style.css):
+   --key fill, --paper text 5.65:1, 2px bottom edge, press, 44px high. Sizing
+   lives in style.css. Only the "Sound on" state is set here: a brass border
+   and bold text, so the state is not colour alone. */
 .mute-toggle[aria-pressed="false"] {
   border-color: var(--accent);
   font-weight: bold;
@@ -41,7 +37,9 @@
   visibility: visible;
 }
 
-/* Inert while an item prints. The dashed edge means it is not colour alone.
+/* Inert while an item prints, and for an export key with nothing to export.
+   The dashed edge means it is not colour alone. The border width stays 2px, so
+   an inert key is the same height as a live one.
    --desk-muted on --desk 6.00:1. */
 .btn[aria-disabled="true"],
 .btn[aria-disabled="true"]:hover {
@@ -155,12 +153,16 @@
   bottom: var(--space-1);
 }
 
-/* The bar spans the housing width: plate on the left, tools on the right. */
+/* The bar spans the housing width: plate and BELL label on the left, the feed
+   key toolbar taking the rest on the right. When the toolbar does not fit on
+   the same line (phone), it wraps onto its own row and its keys wrap inside
+   it (see .nameplate-tools in style.css). */
 .printer-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2) var(--space-3);
   margin-bottom: var(--space-2);
   padding: var(--space-1) var(--space-2);
   background: var(--desk-dark);
@@ -175,11 +177,6 @@
   border-radius: var(--radius-bar);
   font-family: var(--font-paper);
   line-height: 1.5;
-}
-
-.printer-bar > .nameplate-tools {
-  flex: 0 1 var(--tools-width);
-  width: auto;
 }
 
 .printer-body > .notice {
