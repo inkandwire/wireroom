@@ -1,7 +1,13 @@
 import "./tokens.css";
 import "./style.css";
 import "./printer.css";
-import { composeWireItem, type Priority } from "../core/index";
+import {
+  composeWireItem,
+  entriesFromResult,
+  type FeedEntry,
+  type Priority,
+} from "../core/index";
+import { buildExport, type ExportKind } from "./exportFeed";
 import {
   EXAMPLE_SOURCED,
   EXAMPLE_UNSOURCED,
@@ -75,7 +81,54 @@ muteEl.addEventListener("click", () => {
   sound.setMuted(!sound.isMuted());
   renderMute();
 });
-toolsEl.append(bellLabelEl, muteEl);
+
+// ---- Session list and export keys ----------------------------------------
+
+// Released items of this page session, in print order. Only RELEASED results
+// are added, so a held or rejected draft never reaches a feed.
+const sessionEntries: FeedEntry[] = [];
+
+const exportRssEl = document.createElement("button");
+exportRssEl.type = "button";
+exportRssEl.id = "export-rss";
+exportRssEl.className = "btn export-key";
+exportRssEl.textContent = "Export RSS";
+exportRssEl.setAttribute("aria-disabled", "true");
+
+const exportJsonEl = document.createElement("button");
+exportJsonEl.type = "button";
+exportJsonEl.id = "export-json";
+exportJsonEl.className = "btn export-key";
+exportJsonEl.textContent = "Export JSON feed";
+exportJsonEl.setAttribute("aria-disabled", "true");
+
+function renderExportKeys(): void {
+  const empty = sessionEntries.length === 0;
+  for (const key of [exportRssEl, exportJsonEl]) {
+    if (empty) key.setAttribute("aria-disabled", "true");
+    else key.removeAttribute("aria-disabled");
+  }
+}
+
+function downloadExport(kind: ExportKind): void {
+  if (sessionEntries.length === 0) return; // inert while the list is empty
+  const generatedAt = new Date().toISOString(); // UI may read the clock
+  const file = buildExport(kind, sessionEntries, generatedAt);
+  const blob = new Blob([file.text], { type: file.mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.fileName;
+  document.body.append(a);
+  a.click();
+  URL.revokeObjectURL(url);
+  a.remove();
+}
+
+exportRssEl.addEventListener("click", () => downloadExport("rss"));
+exportJsonEl.addEventListener("click", () => downloadExport("json"));
+
+toolsEl.append(bellLabelEl, muteEl, exportRssEl, exportJsonEl);
 
 // First click or key press anywhere unlocks audio. It makes no sound.
 function unlockOnce(): void {
@@ -315,6 +368,9 @@ form.addEventListener("submit", (event) => {
     const proof = heldProof(draft, result.releaseAt);
     printer.print({ kind: "held", stamp: proof.stamp, text: proof.text });
   } else {
+    // Same `now` as the draft. entriesFromResult is empty for HELD/REJECTED.
+    sessionEntries.push(...entriesFromResult(result, now));
+    renderExportKeys();
     printer.print({
       kind: "released",
       text: result.item.text,

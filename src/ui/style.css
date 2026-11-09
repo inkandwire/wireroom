@@ -67,14 +67,22 @@ h2 {
 }
 
 /* Reserved slot in the printer bar: fixed width and height so filling it never
-   shifts layout. */
+   shifts layout. The keys wrap onto more lines when they do not fit, each
+   keeping its 44px tap height. */
 .nameplate-tools {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-2);
   width: min(100%, var(--tools-width));
   min-height: var(--tap);
+}
+
+/* Export keys sit next to the mute toggle. They reuse .btn (grey-green key),
+   the dashed aria-disabled look (printer.css) and the global focus ring. */
+.export-key {
+  flex: 0 0 auto;
 }
 
 /* Layout */

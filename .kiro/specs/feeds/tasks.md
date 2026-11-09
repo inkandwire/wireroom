@@ -16,7 +16,7 @@ Rules for every task: add no dependency (plain string builders, no XML or feed l
   - Maintainer: runs `npm test`, reports failures with the fast-check seed and counterexample.
   - Requirements: 2.1 to 2.3, 3.1 to 3.4, 4.1 to 4.3, 5.1 to 5.5, 7.1, 7.2.
 
-- [ ] 3. Export keys and session list (`src/ui/feedMeta.ts`, `src/ui/exportFeed.ts`, `src/ui/exportFeed.test.ts`, `src/ui/main.ts`, `index.html` only if needed, `src/ui/style.css`)
+- [x] 3. Export keys and session list (`src/ui/feedMeta.ts`, `src/ui/exportFeed.ts`, `src/ui/exportFeed.test.ts`, `src/ui/main.ts`, `index.html` only if needed, `src/ui/style.css`)
   - `src/ui/feedMeta.ts`: the `FEED_META` constant with a placeholder comment. `src/ui/exportFeed.ts`: pure `buildExport(kind, entries, generatedAt)` returning file name, MIME type and text. `src/ui/exportFeed.test.ts`: file names, MIME types, text equals the core output, empty list still valid.
   - `src/ui/main.ts`: the session list, pushing `{ item, publishedAt: now }` only for `RELEASED` results with the same `now` as the draft; the "Export RSS" (`export-rss`) and "Export JSON feed" (`export-json`) keys in `#nameplate-tools`, `aria-disabled` while the list is empty, thin Blob download with a temporary `<a download>`. Keep existing ids and classes.
   - Styles with existing tokens only (the small grey-green key look), 44px tap height, visible focus ring, no new colour.
