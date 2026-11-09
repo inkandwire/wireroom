@@ -2,7 +2,7 @@
 
 Note: the agent running a task cannot run shell commands. Each task only writes files, including its own tests. Do not add install or run steps. The maintainer runs `npm install` and `npm test` outside Kiro.
 
-- [ ] 1. Project scaffold and shared types
+- [x] 1. Project scaffold and shared types
   - Create `package.json`: `"type": "module"`, scripts `"test": "vitest run"` and `"build": "vite build"`, devDependencies `typescript`, `vite`, `vitest`, `fast-check` (pinned versions, no ranges).
   - Create `tsconfig.json` with `strict: true`, ES module settings, and `include` of `src`.
   - Create `vite.config.ts` with `base: "./"` (relative paths for static hosting) and a vitest `test` block (`include: ["src/**/*.test.ts", "tests/**/*.test.ts"]`, node environment).
