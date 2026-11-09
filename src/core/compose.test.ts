@@ -104,7 +104,8 @@ describe("composeWireItem", () => {
         "The app has 500 users, the company said.",
         "",
         "Sources:",
-        "1. 500 users https://example.com/users",
+        "1. 500 users",
+        "   https://example.com/users",
         "",
         "-30-",
       ].join("\n"),
@@ -140,24 +141,28 @@ describe("composeWireItem", () => {
     );
   });
 
-  it("prints an empty claim text as `1. <url>`", () => {
+  it("prints an empty claim text as `1.` then the URL on its own line", () => {
     const result = composeWireItem(
       baseDraft({ claims: [{ text: "", sourceUrl: "https://example.com/a" }] }),
     );
     if (result.status !== "RELEASED") throw new Error("expected RELEASED");
-    expect(result.item.text).toContain("\nSources:\n1. https://example.com/a\n");
+    expect(result.item.text).toContain(
+      "\nSources:\n1.\n   https://example.com/a\n",
+    );
   });
 
-  it("hard-splits a URL longer than 69 columns in the text only", () => {
+  it("keeps a URL longer than 69 columns whole on its own line", () => {
     const url = `https://example.com/${"a".repeat(100)}`;
     const result = composeWireItem(
       baseDraft({ claims: [{ text: "big", sourceUrl: url }] }),
     );
     if (result.status !== "RELEASED") throw new Error("expected RELEASED");
-    for (const line of result.item.text.split("\n")) {
+    const lines = result.item.text.split("\n");
+    expect(lines).toContain(`   ${url}`);
+    for (const line of lines) {
+      if (line === `   ${url}`) continue; // documented over-69 exception
       expect(line.length).toBeLessThanOrEqual(69);
     }
-    expect(result.item.text.includes(url)).toBe(false);
     expect(result.item.sources).toEqual([url]);
     expect(result.item.claims[0].sourceUrl).toBe(url);
   });
@@ -175,7 +180,7 @@ describe("composeWireItem", () => {
     if (result.status !== "RELEASED") throw new Error("expected RELEASED");
     expect(result.item.sources).toEqual([url]);
     expect(result.item.claims).toHaveLength(2);
-    expect(result.item.text).toContain(`1. one ${url}\n2. two ${url}\n`);
+    expect(result.item.text).toContain(`1. one\n   ${url}\n2. two\n   ${url}\n`);
   });
 
   it("puts the dateline alone when the body is empty", () => {
@@ -285,6 +290,7 @@ describe("composeWireItem properties", () => {
   });
 
   it("every RELEASED item ends with -30- and has no line over 69 columns", () => {
+    // The test URL is short, so no URL line exceeds 69 columns here.
     fc.assert(
       fc.property(draftArb(fc.array(goodClaimArb, { maxLength: 3 })), (d) => {
         const r = composeWireItem(d);

@@ -4,7 +4,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
 
 Rules for every task: add no dependency, no web font, no image; use CSS gradients only; no `transition: all`; honour `prefers-reduced-motion`; use tokens, not raw hex; keep every existing element id and class used by `src/ui/printer.ts` and `src/ui/main.ts`; do not change `printer.ts`, `main.ts`, the claim gate, the embargo rules or the JSON fields; follow `.kiro/steering/design.md` and `tech.md`.
 
-- [ ] 1. Sources footer and textarea (fixes 5 and 1)
+- [x] 1. Sources footer and textarea (fixes 5 and 1)
   - Files: `src/core/compose.ts`, `src/core/compose.test.ts`, `src/core/wireFooter.prop.test.ts`, `src/core/wireJson.test.ts`, `src/ui/style.css`.
   - Change `sourcesFooter` as in design.md: numbered claim text wrapped to 69 columns, then `"   " + url` on its own line, never wrapped; no URL line when there is no URL; comment the over-69 exception for URLs longer than 66 characters.
   - Update the three test files as in design.md. Properties: every URL appears whole on a line `"   " + url`; every other line is at most 69 columns; text ends with `-30-`; deterministic.

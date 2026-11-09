@@ -208,8 +208,20 @@ textarea {
   border-radius: var(--radius-control);
 }
 
+/* Body textarea. The cause of the clipped first line: the shared input rule
+   gave it a min-height that is not a whole number of lines, so the content
+   box did not match the line height. Fix: paper mono font, line height of
+   exactly 1.5 (24px at 16px), vertical padding, and a height of five whole
+   lines plus padding and borders. The shared min-height is reset here. */
 textarea {
-  min-height: calc(2 * var(--tap));
+  font-family: var(--font-paper);
+  line-height: 1.5;
+  min-height: 0;
+  padding-block: var(--space-2);
+  block-size: calc(
+    5 * 1.5em + 2 * var(--space-2) + 2 * var(--border-control)
+  );
+  scroll-padding-block: var(--space-2);
   resize: vertical;
 }
 

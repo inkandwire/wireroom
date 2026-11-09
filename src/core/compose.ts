@@ -61,12 +61,24 @@ export function formatDateline(city: string, nowMs: number): string {
   return `${cityText}, ${month} ${day} (WireRoom) --`;
 }
 
-/** Numbered `Sources:` footer, wrapped to 69 columns. Empty when no claims. */
+/**
+ * Numbered `Sources:` footer. Empty when no claims.
+ *
+ * Each entry is the numbered claim text wrapped to 69 columns, then the URL
+ * on its own line preceded by 3 spaces (the width of `1. `). No URL line is
+ * printed when the URL is empty.
+ *
+ * EXCEPTION to the 69-column rule: the URL line is never wrapped or broken,
+ * because a broken URL is not a link. A URL longer than 66 characters makes
+ * its line (3 + length) longer than 69 columns. This is the only such case.
+ */
 function sourcesFooter(claims: ReleasedClaim[]): string {
   if (claims.length === 0) return "";
-  const entries = claims.map((c, i) =>
-    wrapText(`${i + 1}. ${c.text} ${c.sourceUrl}`.replace(/\s+/g, " ")),
-  );
+  const entries = claims.map((c, i) => {
+    const textPart = wrapText(`${i + 1}. ${c.text}`.replace(/\s+/g, " "));
+    const url = c.sourceUrl;
+    return url === "" ? textPart : `${textPart}\n   ${url}`;
+  });
   return ["Sources:", ...entries].join("\n");
 }
 

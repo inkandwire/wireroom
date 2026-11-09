@@ -29,7 +29,7 @@ describe("wireItemToJson", () => {
     expect([...order].sort((a, b) => a - b)).toEqual(order);
   });
 
-  it("keeps the long URL unsplit in JSON while the text splits it", () => {
+  it("keeps the long URL whole in JSON and in the text", () => {
     const item = release();
     const parsed = JSON.parse(wireItemToJson(item)) as {
       claims: { text: string; sourceUrl: string }[];
@@ -38,7 +38,7 @@ describe("wireItemToJson", () => {
     };
     expect(parsed.claims).toEqual([{ text: "500 users", sourceUrl: LONG_URL }]);
     expect(parsed.sources).toEqual([LONG_URL]);
-    expect(parsed.text.includes(LONG_URL)).toBe(false);
+    expect(parsed.text.split("\n")).toContain(`   ${LONG_URL}`);
   });
 
   it("is deterministic", () => {

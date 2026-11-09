@@ -64,20 +64,37 @@ describe("sources footer properties", () => {
     );
   });
 
-  it("text has no line over 69 columns and ends with -30-", () => {
+  it("every URL is whole on its own line; other lines fit 69 columns; ends with -30-", () => {
     fc.assert(
       fc.property(fc.array(claimArb, { maxLength: 6 }), (claims) => {
         const r = composeWireItem(draftWith(claims));
         if (r.status !== "RELEASED") throw new Error("expected RELEASED");
-        expect(r.item.text.endsWith("-30-")).toBe(true);
-        for (const line of r.item.text.split("\n")) {
+        const lines = r.item.text.split("\n");
+        const urlLines = new Set(claims.map((c) => "   " + c.sourceUrl));
+        for (const url of urlLines) {
+          expect(lines.includes(url)).toBe(true);
+        }
+        // Documented exception: URL lines (3 spaces + URL) may exceed 69.
+        for (const line of lines) {
+          if (urlLines.has(line)) continue;
           expect(line.length).toBeLessThanOrEqual(69);
         }
+        expect(r.item.text.endsWith("-30-")).toBe(true);
       }),
     );
   });
 
-  it("claim text and URL characters survive in the footer", () => {
+  it("is deterministic", () => {
+    fc.assert(
+      fc.property(fc.array(claimArb, { maxLength: 6 }), (claims) => {
+        const a = composeWireItem(draftWith(claims));
+        const b = composeWireItem(draftWith(claims));
+        expect(a).toEqual(b);
+      }),
+    );
+  });
+
+  it("claim text survives in order and URLs follow in order", () => {
     fc.assert(
       fc.property(fc.array(claimArb, { maxLength: 6 }), (claims) => {
         const r = composeWireItem(draftWith(claims));
