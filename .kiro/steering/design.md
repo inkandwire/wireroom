@@ -29,6 +29,9 @@ All tokens are CSS custom properties in one `:root` block in `src/ui/tokens.css`
 | `--desk-muted` | `#BFC8BF` | hints and secondary text on desk |
 | `--field` | `#F8F3E3` | input fill, rejection notice |
 | `--edge` | `#B9B08F` | input border on desk |
+| `--key` | `#4F5C54` | small grey-green key fill (secondary buttons, mute toggle) |
+| `--desk-dark` | `#232B26` | key bottom edge, field outer line, printer bar |
+| `--brass-dark` | `#9A7220` | Print keycap border and bottom edge |
 
 Contrast (WCAG 2.x relative luminance). Text needs 4.5:1, large text 3:1, borders and UI 3:1.
 
@@ -46,16 +49,30 @@ Contrast (WCAG 2.x relative luminance). Text needs 4.5:1, large text 3:1, border
 | `--accent` on `--desk` (button edge, focus ring) | 5.19:1 |
 | `--field` on `--desk` (field fill) | 9.28:1 |
 | `--edge` on `--desk` (field border) | 4.74:1 |
+| `--paper` on `--key` (secondary key text, mute toggle) | 5.65:1 |
+| `--paper` on `--ink` (key hover) | 14.09:1 |
+| `--desk-muted` on `--desk` (disabled key text) | 6.00:1 |
+| `--ink` on `--field` (mono field text, labels' date and time icon is tinted to about the same ink tone) | 15.81:1 |
+
+The key fill `--key` against `--desk` is only about 1.6:1, so a key never relies on its fill for its boundary: the 2px `--edge` border (4.74:1 on `--desk`) draws it. The Print keycap border `--brass-dark` is decoration; its fill `--accent` is 5.19:1 on `--desk`. The ratios above were computed by hand from the hex values.
 
 `--stamp` is never used on `--desk` (about 1.5:1). Errors appear on `--field`, not on the desk.
 
 **Type roles.** Paper: `--font-paper: "Courier New", Courier, "Liberation Mono", "DejaVu Sans Mono", ui-monospace, monospace`. Controls: `--font-ui: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif`. No web fonts, no network requests.
-- Controls 16px (never smaller, stops iOS input zoom), line height 1.5. Labels 14px, uppercase, letter-spacing 0.04em. Page title 20px.
+- Field text is paper mono, 16px (never smaller, stops iOS input zoom), line height 1.5. Labels are paper mono, 14px, uppercase, letter-spacing 0.04em (typewriter labels). Page title 20px. Keys use the control font, 14px; Print 16px bold.
 - Paper: size is computed to fit 69 columns (see Layout), line height 1.35, `white-space: pre`.
 
 **Spacing** (`--space-1`..`7`): 4, 8, 12, 16, 24, 32, 48px.
-**Radius:** `--radius-paper: 1px` (near square, with a torn edge), `--radius-control: 6px` (inputs, buttons), `--radius-stamp: 3px`.
+**Radius:** `--radius-paper: 1px` (near square, with a torn edge), `--radius-control: 2px` (inputs, keys, square period corners), `--radius-stamp: 3px`.
 **Borders and motion:** 2px control borders, 3px stamp border. Transitions list their properties, last at most 120ms, and are never `transition: all`.
+
+## Controls
+
+- **Fields** are recessed: 2px `--edge` border, a 1px `--desk-dark` outer line (double border) and an inner shadow. `color-scheme: light` keeps native pickers matched. Date and time inputs stay native; only the font and the picker icon tint change. The select keeps `appearance: none` and its CSS triangle.
+- **Secondary keys** (`.btn`, mute toggle) are small grey-green keycaps: `--key` fill, `--paper` text, 2px `--edge` border, 2px `--desk-dark` bottom edge (an outer shadow, so the box size does not change), 2px press on `:active`. "Sound on" adds a brass border and bold text.
+- **Print** is the one brass keycap: `--accent` fill, `--brass-dark` 3px bottom edge, 2px press.
+- **Claim rows** are stacked at every width: the claim label and Remove on the first line (Remove right aligned), the claim text input full width, then the URL label and the URL input full width, with 4px gaps.
+- Focus ring stays 3px `--accent` with 2px offset. Phone tap targets stay at least 44px.
 
 ## Layout
 

@@ -5,26 +5,16 @@
    --ink on --paper 14.09:1 for the lit BELL label. The slot has a fixed size,
    so the label keeps its place while hidden and nothing shifts. */
 
-/* The toggle is a small grey-green key: square 2px corners and a 2px darker
-   bottom edge (an outer shadow, so the size and the 44px target do not
-   change). --ink on --desk-muted is far above 4.5:1. */
+/* The toggle is a small grey-green key, the same as the other secondary keys
+   (.btn in style.css: --key fill, --paper text 5.65:1, 2px bottom edge, press).
+   Only the sizing is set here. "Sound on" adds a brass border and bold text,
+   so the state is not colour alone. */
 .mute-toggle {
   flex: 0 0 auto;
-  color: var(--ink);
-  background: var(--desk-muted);
-  border: var(--border-control) solid var(--edge);
-  border-radius: 2px;
-  box-shadow: 0 2px 0 var(--desk-dark);
 }
 
-.mute-toggle:hover {
-  background: var(--paper);
-}
-
-.mute-toggle[aria-pressed="false"],
-.mute-toggle[aria-pressed="false"]:hover {
-  color: var(--ink);
-  background: var(--accent);
+.mute-toggle[aria-pressed="false"] {
+  border-color: var(--accent);
   font-weight: bold;
 }
 
@@ -51,12 +41,14 @@
   visibility: visible;
 }
 
-/* Inert while an item prints. The dashed edge means it is not colour alone. */
+/* Inert while an item prints. The dashed edge means it is not colour alone.
+   --desk-muted on --desk 6.00:1. */
 .btn[aria-disabled="true"],
 .btn[aria-disabled="true"]:hover {
   color: var(--desk-muted);
   background: transparent;
   border-style: dashed;
+  box-shadow: none;
   font-weight: normal;
   cursor: not-allowed;
 }

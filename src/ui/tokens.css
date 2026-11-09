@@ -9,6 +9,11 @@
   --field: #f8f3e3;
   --edge: #b9b08f;
 
+  /* Small grey-green key (secondary buttons, mute toggle). --paper on --key
+     is about 5.65:1 (4.5:1 needed). The key edge is --edge on --desk (4.74:1,
+     3:1 needed). Hand-computed, WCAG 2.x. */
+  --key: #4f5c54;
+
   /* Printer slot band, a darker shade of --desk. Decorative, carries no text
      and no information, so it needs no contrast ratio of its own.
      Hand-computed (WCAG 2.x): about 1.4:1 against --desk, and --paper on it
@@ -44,7 +49,7 @@
   --space-7: 48px;
 
   --radius-paper: 1px;
-  --radius-control: 6px;
+  --radius-control: 2px;
   --radius-stamp: 3px;
 
   --border-control: 2px;
@@ -209,4 +214,9 @@
   --claims-min-h: 96px;
   --print-h-max: 48px;
   --short-viewport: 800px;
+
+  /* Keys (task 4): the keycap bottom edge and the press travel. */
+  --key-edge: 2px;
+  --key-edge-print: 3px;
+  --key-press: 2px;
 }

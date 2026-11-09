@@ -24,7 +24,7 @@ Rules for every task: add no dependency, no web font, no image; use CSS gradient
   - Requirements: 6.1 to 6.3, 7.1 to 7.4, 8.1, 8.2.
   - Maintainer checks: screenshots (1440x900 and 390x844) of the empty printer, a printed and cut item, a HELD item and a rejection; no gap between roller and paper; BELL label and mute toggle work in the bar; reduced motion on shows no animation.
 
-- [ ] 4. Period-style controls and final contrast check (fix 4)
+- [x] 4. Period-style controls and final contrast check (fix 4)
   - Files: `src/ui/style.css`, `src/ui/printer.css`, `src/ui/tokens.css`, `.kiro/steering/design.md`.
   - Square 2px corners, recessed fields (double border, inner shadow), paper mono 16px field text, typewriter labels, keycap Print (3px dark bottom edge, 2px press), smaller grey-green secondary keys, select keeps `appearance: none` and its arrow, focus ring stays brass 3px with 2px offset, phone tap targets 44px.
   - Compute the WCAG 2.x ratio of every new pair and add the rows to the contrast table in `.kiro/steering/design.md`; adjust a token until text pairs reach 4.5:1 and borders and focus rings 3:1. Re-read `tokens.css` for any raw hex left in components.
