@@ -13,11 +13,9 @@
 
     <main class="app">
       <section class="compose" aria-labelledby="compose-title">
-        <div class="compose-head">
+        <div class="compose-head" title="Made-up sample data, example.com links.">
           <h2 id="compose-title">Compose</h2>
-          <p class="hint examples-hint" id="examples-hint">
-            Made-up sample data, example.com links.
-          </p>
+          <span class="visually-hidden" id="examples-hint">Made-up sample data, example.com links.</span>
           <div class="compose-examples">
             <button type="button" id="example-sourced" class="btn" aria-describedby="examples-hint">Example: all claims sourced</button>
             <button type="button" id="example-unsourced" class="btn" aria-describedby="examples-hint">Example: one claim unsourced</button>
@@ -49,7 +47,7 @@
           <div class="field">
             <label for="body">Body</label>
             <textarea id="body" name="body" rows="5" aria-describedby="body-hint"></textarea>
-            <p class="hint" id="body-hint">Blank line between paragraphs.</p>
+            <span class="visually-hidden" id="body-hint">Blank line between paragraphs.</span>
           </div>
 
           <fieldset class="claims">
@@ -59,9 +57,9 @@
             <button type="button" id="add-claim" class="btn">Add claim</button>
           </fieldset>
 
-          <fieldset class="embargo">
-            <legend>Embargo (optional)</legend>
-            <p class="hint" id="embargo-hint">UTC. Empty date: release now.</p>
+          <fieldset class="embargo" title="UTC, empty date: release now.">
+            <legend>Embargo</legend>
+            <span class="visually-hidden" id="embargo-hint">Optional. UTC, empty date: release now.</span>
             <div class="field-pair">
               <div class="field">
                 <label for="embargo-date">Embargo date (UTC)</label>

@@ -96,8 +96,8 @@ h2 {
   display: contents;
 }
 
-/* Heading row: the heading and a short one-line note side by side, then the
-   two small example buttons under them. */
+/* Heading row: the heading, then the two small example buttons. The sample
+   data note is a title attribute plus visually hidden text (examples-hint). */
 .compose-head {
   display: flex;
   flex-wrap: wrap;
@@ -107,12 +107,6 @@ h2 {
 }
 
 .compose-head > h2 {
-  margin: 0;
-}
-
-.compose-head > .hint {
-  flex: 1 1 0;
-  min-width: 0;
   margin: 0;
 }
 
@@ -184,6 +178,11 @@ h2 {
     margin-bottom: var(--space-2);
   }
 
+  /* Heading and example buttons share one row when they fit. */
+  .compose-examples {
+    flex: 1 1 auto;
+  }
+
   /* The form takes the height left under the heading row. Its fields keep
      their natural height; only the claims fieldset gives up space. */
   #compose-form {
@@ -214,6 +213,25 @@ h2 {
     flex: 1 1 0;
     min-height: var(--claims-min-h);
     overflow-y: auto;
+  }
+
+  /* Embargo: one row. The legend floats so it is the first label of the row
+     and the date and time inputs sit beside it. */
+  fieldset.embargo > legend {
+    float: left;
+    width: auto;
+    margin: 0;
+    padding: 0 var(--space-2) 0 0;
+    line-height: var(--control-h-compact);
+  }
+
+  fieldset.embargo > .field-pair {
+    display: grid;
+    overflow: hidden;
+  }
+
+  fieldset.embargo .field {
+    margin-bottom: var(--space-1);
   }
 
   /* Printer column: fills the column. The paper scrolls inside it. */
@@ -497,6 +515,14 @@ textarea {
    URL label and the URL input, each full width, with a 4px gap between them.
    The two .field wrappers dissolve (display: contents) so their labels and
    inputs sit in the row grid. */
+
+/* Themed thin scrollbars (standard properties only): --edge thumb on a
+   --desk-dark track. */
+#claims,
+.paper {
+  scrollbar-color: var(--edge) var(--desk-dark);
+  scrollbar-width: thin;
+}
 
 .claim-row {
   display: grid;
