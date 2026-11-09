@@ -23,19 +23,19 @@ All tokens are CSS custom properties in one `:root` block in `src/ui/tokens.css`
 | `--paper` | `#EFE6CC` | printer paper; also text on desk |
 | `--ink` | `#1B1915` | text on paper and field fill |
 | `--desk` | `#38433D` | page background, printer body |
-| `--accent` | `#E3B04B` | brass: primary button, focus ring, ticker digits |
+| `--accent` | `#E3B04B` | brass: primary button, focus ring, ticker digits, lock reason edge |
 | `--stamp` | `#A82A1E` | rejection text only |
 | `--stamp-deep` | `#8F1D14` | HOLD stamp border and text, warning mark and warning edge |
 | `--ticker` | `#14110D` | countdown ticker strip fill |
-| `--muted` | `#5B5444` | secondary text on paper and field fill |
-| `--desk-muted` | `#BFC8BF` | hints and secondary text on desk; "RELEASE IN" on the ticker |
+| `--muted` | `#5B5444` | secondary text on paper and field fill; text of a locked field |
+| `--desk-muted` | `#BFC8BF` | hints and secondary text on desk; "RELEASE IN" on the ticker; labels of a locked form |
 | `--field` | `#F8F3E3` | input fill, rejection notice, warning strip |
 | `--edge` | `#B9B08F` | input border on desk |
-| `--key` | `#4F5C54` | small grey-green key fill (secondary buttons, feed keys) |
+| `--key` | `#4F5C54` | small grey-green key fill (secondary buttons, feed keys, held keys) |
 | `--desk-dark` | `#232B26` | key bottom edge, field outer line, printer bar |
 | `--brass-dark` | `#9A7220` | Print keycap border and bottom edge |
 
-`--stamp-speckle` (`rgba(143, 29, 20, 0.18)`) is the `--stamp-deep` tone at low alpha for the ink speckle on the stamp. It is decoration (small dots), not a text colour.
+Decorative colour tokens (no text and no information sit on them, so they need no contrast ratio): `--roller-hi` `#4A4F4B`, `--roller-mid` `#232826` and `--roller-lo` `#0F1210` (platen roller shading); `--shadow-ink` (`rgba(15, 18, 16, 0.45)`, inner shadow of recessed fields); `--stamp-speckle` (`rgba(143, 29, 20, 0.18)`), the `--stamp-deep` tone at low alpha for the ink speckle on the stamp (small dots, not a text colour).
 
 Contrast (WCAG 2.x relative luminance). Text needs 4.5:1, large text 3:1, borders and UI 3:1.
 
@@ -46,26 +46,26 @@ Contrast (WCAG 2.x relative luminance). Text needs 4.5:1, large text 3:1, border
 | `--stamp` on `--paper` | 5.60:1 |
 | `--stamp-deep` on `--paper` (HOLD stamp text and border) | 7.16:1 |
 | `--ink` on `--field` | 15.81:1 |
-| `--muted` on `--field` | 6.76:1 |
+| `--muted` on `--field` (also locked field text) | 6.76:1 |
 | `--stamp` on `--field` | 6.28:1 |
 | `--stamp-deep` on `--field` (warning edge, mark fill) | 8.04:1 |
 | `--field` on `--stamp-deep` (warning mark "!") | 8.04:1 |
-| `--paper` on `--desk` | 8.27:1 |
+| `--paper` on `--desk` (also the lock reason line) | 8.27:1 |
 | `--desk-muted` on `--desk` | 6.00:1 |
 | `--ink` on `--accent` (button text) | 8.84:1 |
-| `--accent` on `--desk` (button edge, focus ring) | 5.19:1 |
+| `--accent` on `--desk` (button edge, focus ring, lock reason edge) | 5.19:1 |
 | `--accent` on `--ticker` (ticker digits) | 9.48:1 |
 | `--paper` on `--ticker` (release time) | 15.11:1 |
 | `--desk-muted` on `--ticker` ("RELEASE IN") | 10.96:1 |
 | `--field` on `--desk` (field fill) | 9.28:1 |
-| `--edge` on `--desk` (field border, date and time well border) | 4.74:1 |
-| `--paper` on `--key` (secondary key text, feed key text) | 5.65:1 |
+| `--edge` on `--desk` (field border, locked dashed border, date and time well border) | 4.74:1 |
+| `--paper` on `--key` (secondary key text, feed key text, held key text) | 5.65:1 |
 | `--paper` on `--ink` (key hover) | 14.09:1 |
-| `--desk-muted` on `--desk` (disabled key text, inert feed key) | 6.00:1 |
+| `--desk-muted` on `--desk` (disabled key text, inert feed key, inert Print, locked labels and keys) | 6.00:1 |
 | `--ink` on `--field` (mono field text, date and time text, warning text) | 15.81:1 |
 | `--ink` on `--field` (calendar and clock icon strokes, UI needs 3:1) | 15.81:1 |
 
-The key fill `--key` against `--desk` is only about 1.6:1, so a key never relies on its fill for its boundary: the 2px `--edge` border (4.74:1 on `--desk`) draws it. The Print keycap border `--brass-dark` is decoration; its fill `--accent` is 5.19:1 on `--desk`. The ratios above were computed by hand from the hex values.
+The key fill `--key` against `--desk` is only about 1.6:1, so a key never relies on its fill for its boundary: the 2px `--edge` border (4.74:1 on `--desk`) draws it. The Print keycap border `--brass-dark` is decoration; its fill `--accent` is 5.19:1 on `--desk`. The ratios above were computed by hand from the hex values and re-checked against `tokens.css` after the form lock was added; every text pair is at least 4.5:1 and every border or UI pair at least 3:1.
 
 `--stamp` and `--stamp-deep` are never used on `--desk` (about 1.5:1 and lower). Errors appear on `--field`, not on the desk.
 
@@ -86,6 +86,8 @@ The key fill `--key` against `--desk` is only about 1.6:1, so a key never relies
 - **Feed key toolbar.** Mute, Export RSS and Export JSON feed sit in one element with `role="toolbar"` and `aria-label="Feed keys"` (`#nameplate-tools`), as a row of secondary keys sharing the class `feed-key`. The BELL label is not inside the toolbar. All three keys are the same height (min 44px at every width), centred text on one line. The toolbar wraps to a second row on a phone, and every row keeps the same key height. An inert export key (nothing to export) uses the dashed `aria-disabled` edge, with the same border width, so it keeps the same height.
 - **Print** is the one brass keycap: `--accent` fill, `--brass-dark` 3px bottom edge, 2px press.
 - **Claim rows** are stacked at every width: the claim label and Remove on the first line (Remove right aligned), the claim text input full width, then the URL label and the URL input full width, with 4px gaps.
+- **Form lock.** While a story is held, all fields sit in `fieldset#form-fields`, which is `disabled`. Print and Print instantly get `aria-disabled="true"` (the inert dashed look). The form is dimmed without `opacity`, so contrast holds: labels turn `--desk-muted`, field text `--muted`, borders become dashed `--edge`, and keys inside the form drop their fill. A visible reason line `#lock-reason` reads "Story held. Release or cancel to compose." (`--paper` on `--desk`, 4px `--accent` left edge). The lock ends when the clock releases the story, or on Release now or Cancel embargo.
+- **Held keys.** `.hold-keys` in the held area holds "Release now" (`#release-now`) and "Cancel embargo" (`#cancel-embargo`), ordinary secondary keys at least 44px high. Release now prints at once through the same path as the clock release. Cancel embargo drops the story without printing, adds nothing to a feed, unlocks the form, announces "Embargo cancelled" in `#status` and moves focus to `#headline`.
 - Focus ring stays 3px `--accent` with 2px offset. Phone tap targets stay at least 44px.
 
 ## Layout
@@ -93,7 +95,7 @@ The key fill `--key` against `--desk` is only about 1.6:1, so a key never relies
 - Desktop (900px and up): two columns, `grid-template-columns: minmax(320px, 400px) minmax(0, 1fr)`, gap `--space-6`. Left is the compose form. Right is the printer: a desk-coloured body with the paper roll as a scrolling region (own vertical scroll, newest item at the bottom). Grid children get `min-width: 0`.
 - Phone (390px wide): one column, form first, printer below, page margin `--space-2`. After a successful print, scroll the printer into view.
 - No sideways page scroll at any width. Check `document.documentElement.scrollWidth <= innerWidth` at 390px.
-- **69 columns must fit.** The paper is a size container (`container-type: inline-size`). Paper font size is `clamp(8px, (100cqi - 2 * paper padding) / 42.8, 16px)`; 42.8 is 69 columns times 0.62em, a safe upper bound for the mono stack. At 390px the paper prints at about 8px. At 1280px it reaches the 16px cap. Lines are never re-wrapped for display, since wire text must stay byte-identical. Below the 8px floor, or when the user zooms, the paper box (not the page) scrolls sideways (`overflow-x: auto`, `tabindex="0"`, labelled).
+- **69 columns must fit.** The paper is a size container (`container-type: inline-size`). Paper font size is `clamp(12px, (100cqi - 2 * paper padding) / 42.8, 16px)` (`--paper-font-min`, `--paper-font-max`); 42.8 is 69 columns times 0.62em, a safe upper bound for the mono stack. At 1280px it reaches the 16px cap. Lines are never re-wrapped for display, since wire text must stay byte-identical. Below the 12px floor (a 390px phone), or when the user zooms, the paper box (not the page) scrolls sideways (`overflow-x: auto`, `tabindex="0"`, labelled).
 - The paper is a 1px-radius rectangle in `--paper` with a torn bottom edge made in CSS (`clip-path` zigzag, 6px teeth). No images.
 
 ## Printer behaviour
@@ -120,10 +122,10 @@ WebAudio only, synthesised, no audio files. One `AudioContext`, one master gain.
 
 - `prefers-reduced-motion: reduce`: no typing animation, the finished item appears at once, no tear shift, no smooth scrolling, no screen shake anywhere. The bell is the "BELL" text label only.
 - `:focus-visible` ring on every interactive element: 3px `--accent` outline, 2px offset, on the desk (5.19:1). Never `outline: none` without a replacement.
-- Tap targets at least 44 by 44px, including the mute toggle, Print instantly and links in the rejection list.
+- Tap targets at least 44 by 44px, including the mute toggle, Print instantly, the held keys and links in the rejection list.
 - Every field has a real `<label for>`, not placeholder-only. Hints are linked with `aria-describedby`.
 - The paper has `aria-live="off"`. A separate visually hidden `role="status"` region (polite) gets the finished item text in one update after printing ends, then is cleared about 1s later so it is read once. Never announce per character.
-- Keyboard-only use works end to end: fill, print, skip, mute, read the paper. Tab order follows reading order. Esc has no hidden behaviour.
+- Keyboard-only use works end to end: fill, print, skip, mute, release now, cancel, read the paper. Tab order follows reading order. Esc has no hidden behaviour.
 - Errors are text with a "NOT RELEASED" prefix and a per-claim sentence. Colour only reinforces.
 
 ## Do not

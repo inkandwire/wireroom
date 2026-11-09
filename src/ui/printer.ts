@@ -54,6 +54,10 @@ export const ITEM_SHIFT_CLASS = "item--shift";
 export const COUNTDOWN_NOTE =
   "Kept in this page only. Closing it cancels the release.";
 export const TICKER_TITLE = "RELEASE IN";
+export const RELEASE_NOW_ID = "release-now";
+export const CANCEL_EMBARGO_ID = "cancel-embargo";
+export const RELEASE_NOW_TEXT = "Release now";
+export const CANCEL_EMBARGO_TEXT = "Cancel embargo";
 
 export function createPrinter(deps: PrinterDeps): Printer {
   const listeners: Array<(busy: boolean) => void> = [];
@@ -198,9 +202,10 @@ export function createPrinter(deps: PrinterDeps): Printer {
     pre.append(node);
     item.append(pre);
 
-    // Held area of a held proof: the ticker and the warning strip. Not a live
-    // region: the status region never hears it, and the paper is
-    // aria-live="off". `.countdown-label` is the node the clock loop updates.
+    // Held area of a held proof: the ticker, the warning strip and the two
+    // keys. Not a live region: the status region never hears it, and the paper
+    // is aria-live="off". `.countdown-label` is the node the clock loop
+    // updates. The keys carry no handlers here; main.ts wires them.
     if (
       job.kind === "held" &&
       job.holdId !== undefined &&
@@ -229,7 +234,21 @@ export function createPrinter(deps: PrinterDeps): Printer {
       warning.className = "hold-warning";
       warning.textContent = COUNTDOWN_NOTE;
 
-      area.append(ticker, warning);
+      const keys = doc.createElement("div");
+      keys.className = "hold-keys";
+      const releaseNow = doc.createElement("button");
+      releaseNow.type = "button";
+      releaseNow.id = RELEASE_NOW_ID;
+      releaseNow.className = "btn";
+      releaseNow.textContent = RELEASE_NOW_TEXT;
+      const cancel = doc.createElement("button");
+      cancel.type = "button";
+      cancel.id = CANCEL_EMBARGO_ID;
+      cancel.className = "btn";
+      cancel.textContent = CANCEL_EMBARGO_TEXT;
+      keys.append(releaseNow, cancel);
+
+      area.append(ticker, warning, keys);
       item.append(area);
     }
     deps.paper.append(item);

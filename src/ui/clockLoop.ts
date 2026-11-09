@@ -21,6 +21,8 @@ export interface ClockLoopDeps {
 
 export interface ClockLoop {
   add(entry: HeldEntry): void;
+  /** Removes and returns one held entry, or undefined if `id` is not held. */
+  take(id: string): HeldEntry | undefined;
   size(): number;
   stop(): void;
 }
@@ -71,6 +73,13 @@ export function createClockLoop(deps: ClockLoopDeps): ClockLoop {
       if (timer === undefined) {
         timer = deps.setInterval(tick, TICK_MS);
       }
+    },
+    take(id: string): HeldEntry | undefined {
+      const index = held.findIndex((e) => e.id === id);
+      if (index < 0) return undefined;
+      const [entry] = held.splice(index, 1);
+      if (held.length === 0) clearTimer();
+      return entry;
     },
     size(): number {
       return held.length;

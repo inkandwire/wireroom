@@ -150,6 +150,16 @@ h2 {
   margin-bottom: var(--space-3);
 }
 
+/* #form-fields wraps every field of the form so one `disabled` locks them all
+   while a story is held (design-pass-2, task 4). It has no border, padding or
+   margin of its own: it must not change the look or the layout. */
+.form-fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
 .printer {
   margin-bottom: var(--space-4);
 }
@@ -212,7 +222,8 @@ h2 {
   }
 
   /* The form takes the height left under the heading row. Its fields keep
-     their natural height; only the claims fieldset gives up space. */
+     their natural height; only the claims fieldset gives up space. The fields
+     live in #form-fields, which is a column of its own. */
   #compose-form {
     display: flex;
     flex-direction: column;
@@ -225,7 +236,18 @@ h2 {
     flex: 0 0 auto;
   }
 
-  #compose-form > .claims {
+  #compose-form > .form-fields {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .form-fields > * {
+    flex: 0 0 auto;
+  }
+
+  .form-fields > .claims {
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
@@ -233,11 +255,11 @@ h2 {
     overflow: hidden;
   }
 
-  #compose-form > .claims > * {
+  .form-fields > .claims > * {
     flex: 0 0 auto;
   }
 
-  #compose-form > .claims > #claims {
+  .form-fields > .claims > #claims {
     flex: 1 1 0;
     min-height: var(--claims-min-h);
     overflow-y: auto;
@@ -404,6 +426,13 @@ textarea {
   font-size: 16px;
 }
 
+/* The only blinking caret allowed is the one on the headline text being
+   typed. It is the native caret (no animation of our own), so it cannot blink
+   under prefers-reduced-motion by our doing. */
+#headline {
+  caret-color: var(--accent);
+}
+
 /* Date and time wells (#embargo-date, #embargo-time). The elements stay native
    (type="date" and type="time"); they get the recessed field recipe above
    (2px --edge border 4.74:1 on --desk, --desk-dark outer line, inner shadow,
@@ -507,6 +536,50 @@ textarea {
   line-height: 1.25;
 }
 
+/* Form lock (design-pass-2, task 4). While a story is held, #form-fields is
+   disabled and .compose carries data-locked. The reason line is --paper on
+   --desk (8.27:1) with a 4px --accent left edge (5.19:1 on --desk). Dimming
+   never uses opacity, so contrast holds: labels and legends turn --desk-muted
+   on --desk (6.00:1), field text turns --muted on --field (6.76:1), and a
+   dashed --edge border (4.74:1 on --desk) marks the fields as inert, so
+   colour is not the only signal. Inert keys inside the form (Add claim,
+   Remove) drop their fill to the desk and use --desk-muted text on --desk
+   (6.00:1), like an inert feed key. */
+.lock-reason {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+  border-left: var(--border-stamp-heavy) solid var(--accent);
+  font-family: var(--font-paper);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.form-fields:disabled label,
+.form-fields:disabled legend {
+  color: var(--desk-muted);
+}
+
+.form-fields:disabled input,
+.form-fields:disabled select,
+.form-fields:disabled textarea {
+  color: var(--muted);
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.form-fields:disabled .btn {
+  color: var(--desk-muted);
+  background: transparent;
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.form-fields:disabled .select-wrap::after {
+  border-top-color: var(--muted);
+}
+
 /* Keys. A secondary key is a small grey-green keycap: --paper on --key about
    5.65:1, square 2px corners, a darker bottom edge drawn as an outer shadow
    (it does not change the box size or the 44px target) and a 2px press. */
@@ -562,6 +635,23 @@ textarea {
   padding: var(--space-1) var(--space-2);
   font-size: 14px;
   line-height: 1.25;
+}
+
+/* Held keys: "Release now" and "Cancel embargo" in the held area under the
+   warning strip. Ordinary secondary keys (--paper on --key 5.65:1, 2px --edge
+   border) sitting on the paper. The item sets white-space: pre, so the row
+   resets it to normal. Both keys are at least 44px high on every width. */
+.hold-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  white-space: normal;
+}
+
+.hold-keys > .btn {
+  min-height: var(--tap);
+  white-space: nowrap;
 }
 
 /* Claim rows: always stacked, at every width. The label row holds the claim
@@ -682,6 +772,11 @@ textarea {
     padding-block: var(--space-1);
   }
 
+  /* The held keys stay at the full tap size. */
+  .hold-keys > .btn {
+    min-height: var(--tap);
+  }
+
   /* Remove sits on the label line, so it stays short there. */
   .claim-row > .claim-remove {
     min-height: 26px;
@@ -706,6 +801,12 @@ textarea {
   fieldset {
     margin-bottom: var(--space-2);
     padding: var(--space-1) var(--space-3) 0;
+  }
+
+  /* The wrapper keeps no margin or padding of its own. */
+  .form-fields {
+    margin: 0;
+    padding: 0;
   }
 
   #claims {

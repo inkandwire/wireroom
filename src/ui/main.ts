@@ -22,7 +22,13 @@ import {
   type ClaimRow,
   type FormValues,
 } from "./form";
-import { createPrinter, type PrintJob } from "./printer";
+import { CANCEL_ANNOUNCE, lockView } from "./heldState";
+import {
+  CANCEL_EMBARGO_ID,
+  RELEASE_NOW_ID,
+  createPrinter,
+  type PrintJob,
+} from "./printer";
 import { createSound, type AudioContextLike } from "./sound";
 
 function byId<T extends HTMLElement>(id: string): T {
@@ -32,6 +38,8 @@ function byId<T extends HTMLElement>(id: string): T {
 }
 
 const form = byId<HTMLFormElement>("compose-form");
+const formFieldsEl = byId<HTMLFieldSetElement>("form-fields");
+const lockReasonEl = byId<HTMLElement>("lock-reason");
 const cityEl = byId<HTMLInputElement>("city");
 const headlineEl = byId<HTMLInputElement>("headline");
 const bodyEl = byId<HTMLTextAreaElement>("body");
@@ -48,6 +56,7 @@ const printEl = byId<HTMLButtonElement>("print");
 const printInstantlyEl = byId<HTMLButtonElement>("print-instantly");
 const exampleSourcedEl = byId<HTMLButtonElement>("example-sourced");
 const exampleUnsourcedEl = byId<HTMLButtonElement>("example-unsourced");
+const composeEl = document.querySelector<HTMLElement>(".compose");
 const printerSectionEl = document.querySelector<HTMLElement>(".printer") ?? paperEl;
 
 // ---- Sound, mute toggle, BELL label --------------------------------------
@@ -162,20 +171,41 @@ const printer = createPrinter({
   clearTimeout: (id) => window.clearTimeout(id),
 });
 
-const INERT_BUTTONS = [printEl, exampleSourcedEl, exampleUnsourcedEl];
+// True while at least one story is held. The clock loop owns the list.
+function isLocked(): boolean {
+  return clockLoop.size() > 0;
+}
+
+function setAriaDisabled(el: HTMLElement, on: boolean): void {
+  if (on) el.setAttribute("aria-disabled", "true");
+  else el.removeAttribute("aria-disabled");
+}
+
+// Print and the examples are inert while the printer is busy or a story is
+// held. Print instantly is inert only while held and not printing: during the
+// print of the held proof itself it must stay usable to skip ahead.
+function syncInert(): void {
+  const busy = printer.isBusy();
+  const locked = isLocked();
+  setAriaDisabled(printEl, busy || locked);
+  setAriaDisabled(exampleSourcedEl, busy || locked);
+  setAriaDisabled(exampleUnsourcedEl, busy || locked);
+  setAriaDisabled(printInstantlyEl, locked && !busy);
+}
 
 printer.onBusyChange((busy) => {
-  for (const button of INERT_BUTTONS) {
-    if (busy) button.setAttribute("aria-disabled", "true");
-    else button.removeAttribute("aria-disabled");
-  }
+  syncInert();
   if (busy) {
     printInstantlyEl.hidden = false;
   } else {
     // Do not lose the focus position when the skip button goes away.
     const hadFocus = document.activeElement === printInstantlyEl;
     printInstantlyEl.hidden = true;
-    if (hadFocus) printEl.focus();
+    if (hadFocus) {
+      // While a story is held the form is locked, so go to the held keys.
+      if (isLocked()) document.getElementById(RELEASE_NOW_ID)?.focus();
+      else printEl.focus();
+    }
   }
   // Phone layout: bring the printer into view when a print starts and ends.
   if (!desktopQuery.matches) {
@@ -216,6 +246,19 @@ function holdItemEl(id: string): HTMLElement | null {
   return paperEl.querySelector<HTMLElement>(`[data-hold-id="${id}"]`);
 }
 
+/** Form lock: disables the fields and shows the reason line while held. */
+function applyLock(): void {
+  const view = lockView(clockLoop.size());
+  formFieldsEl.disabled = view.locked;
+  lockReasonEl.textContent = view.reason;
+  lockReasonEl.hidden = !view.locked;
+  if (composeEl !== null) {
+    if (view.locked) composeEl.setAttribute("data-locked", "");
+    else composeEl.removeAttribute("data-locked");
+  }
+  syncInert();
+}
+
 function onClockTick(rows: ClockRow[]): void {
   for (const row of rows) {
     const label = holdItemEl(row.id)?.querySelector(".countdown-label");
@@ -224,6 +267,9 @@ function onClockTick(rows: ClockRow[]): void {
 }
 
 function onClockRelease(one: ReleasedOne): void {
+  // The loop (or take) has already removed the entry, so this unlocks the
+  // form when it was the last held story.
+  applyLock();
   if (one.result.status !== "RELEASED") return; // cannot happen after a due tick
   const { entry, result } = one;
 
@@ -232,6 +278,7 @@ function onClockRelease(one: ReleasedOne): void {
   const label = itemEl?.querySelector(".countdown-label");
   if (label) label.textContent = "RELEASED";
   itemEl?.querySelector(".hold-warning")?.remove();
+  itemEl?.querySelector(".hold-keys")?.remove();
 
   // publishedAt is the release time, never the wake-up time.
   sessionEntries.push(...entriesFromResult(result, entry.releaseAt));
@@ -251,6 +298,52 @@ const clockLoop = createClockLoop({
   clearInterval: (id) => window.clearInterval(id),
   onTick: onClockTick,
   onRelease: onClockRelease,
+});
+
+// Release now: an explicit key press ends the hold early. The claim gate has
+// already passed before the hold, and nothing is published without the press.
+// It goes through the same path as the clock release (onClockRelease); the
+// release time is the click time.
+function releaseNow(id: string): void {
+  const held = clockLoop.take(id);
+  if (held === undefined) return;
+  const nowIso = new Date(Date.now()).toISOString(); // the UI reads the clock
+  const draft = { ...held.draft, now: nowIso, embargo: nowIso };
+  const result = composeWireItem(draft);
+  onClockRelease({
+    entry: { ...held, draft, releaseAt: nowIso },
+    result,
+  });
+  headlineEl.focus();
+}
+
+// Cancel embargo: drop the held story without printing it. Nothing goes to a
+// feed.
+function cancelEmbargo(id: string): void {
+  const held = clockLoop.take(id);
+  if (held === undefined) return;
+  const itemEl = holdItemEl(id);
+  const label = itemEl?.querySelector(".countdown-label");
+  if (label) label.textContent = "CANCELLED";
+  itemEl?.querySelector(".hold-warning")?.remove();
+  itemEl?.querySelector(".hold-keys")?.remove();
+  statusEl.textContent = CANCEL_ANNOUNCE;
+  window.setTimeout(() => {
+    if (statusEl.textContent === CANCEL_ANNOUNCE) statusEl.textContent = "";
+  }, 1000);
+  applyLock();
+  headlineEl.focus();
+}
+
+paperEl.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof Element)) return;
+  const key = target.closest("button");
+  if (key === null) return;
+  const id = key.closest<HTMLElement>("[data-hold-id]")?.dataset.holdId;
+  if (id === undefined) return;
+  if (key.id === RELEASE_NOW_ID) releaseNow(id);
+  else if (key.id === CANCEL_EMBARGO_ID) cancelEmbargo(id);
 });
 
 // ---- Claim rows ----------------------------------------------------------
@@ -370,11 +463,11 @@ function fillForm(values: FormValues): void {
 }
 
 exampleSourcedEl.addEventListener("click", () => {
-  if (printer.isBusy()) return;
+  if (printer.isBusy() || isLocked()) return;
   fillForm(EXAMPLE_SOURCED);
 });
 exampleUnsourcedEl.addEventListener("click", () => {
-  if (printer.isBusy()) return;
+  if (printer.isBusy() || isLocked()) return;
   fillForm(EXAMPLE_UNSOURCED);
 });
 
@@ -416,6 +509,7 @@ function showNotice(parts: { heading: string; entries?: { text: string; rowIndex
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   if (printer.isBusy()) return; // Print is inert while an item prints
+  if (isLocked()) return; // Print is inert while a story is held
   const nowMs = Date.now(); // the only clock read for the draft
   const now = new Date(nowMs).toISOString();
   const { draft, rowIndexes, embargoInvalid } = formToDraft(readForm(), now);
@@ -457,6 +551,7 @@ form.addEventListener("submit", (event) => {
     });
     // Not in any feed until the loop releases it.
     clockLoop.add({ id, draft, releaseAt: result.releaseAt });
+    applyLock();
   } else {
     // Same `now` as the draft. entriesFromResult is empty for HELD/REJECTED.
     sessionEntries.push(...entriesFromResult(result, now));
@@ -470,3 +565,4 @@ form.addEventListener("submit", (event) => {
 });
 
 addRow();
+applyLock();

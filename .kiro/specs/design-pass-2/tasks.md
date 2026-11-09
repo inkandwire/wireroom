@@ -19,7 +19,7 @@ Rules for every task: add no dependency, no web font, no image file; no `transit
   - Requirements: 4.1 to 4.4, 6.1, 6.2, 8.1, 8.2, 9.1 to 9.3.
   - Maintainer checks: `npm test` passes including the clock loop tests. DOM on a held item at 1440x900: `.ticker-digits` computed `font-size >= 32px`, at 390x844 `>= 24px`; `.ticker` has the text "RELEASE IN"; `.stamp` computed `border-top-width >= 4px` and `color` equals `--stamp-deep`; `.hold-warning` has the exact sentence, `font-size >= 14px` (desktop) and `>= 16px` (phone); `document.querySelectorAll('.caret').length === 0`; `document.body.innerText.includes("\u2588") === false`; `aria-live` is not set on the ticker. Screenshot: held state with ticker, crimson stamp with speckle and the warning strip; no block between the BULLETIN label and the countdown; page does not scroll at 1440x900.
 
-- [ ] 4. Form lock, Release now, Cancel embargo, final token check (fix 5)
+- [x] 4. Form lock, Release now, Cancel embargo, final token check (fix 5)
   - Files: `src/ui/heldState.ts` and `src/ui/heldState.test.ts` (new, pure), `src/ui/clockLoop.ts` and `src/ui/clockLoop.test.ts` (`take(id)`), `index.html` (`fieldset#form-fields`, `#lock-reason`), `src/ui/printer.ts` (the two keys in `.hold-keys`, ids `release-now` and `cancel-embargo`), `src/ui/main.ts` (thin wiring, `applyLock()`), `src/ui/style.css` (dimming), `.kiro/steering/design.md` (final contrast table).
   - Requirements: 5.1 to 5.5, 9.1 to 9.3.
   - Product note for the maintainer: "Release now" ends a hold early on an explicit key press. It is a product decision under `product.md` ("any change that weakens either rule"); the claim gate has already passed and nothing is published without the press.

@@ -203,3 +203,57 @@ describe("createClockLoop", () => {
     expect(f.active()).toBe(true);
   });
 });
+
+describe("createClockLoop take()", () => {
+  it("returns undefined for an unknown id", () => {
+    const f = setup();
+    const loop = createClockLoop(f.deps);
+    loop.add(entry("hold-1", START + 5000));
+    expect(loop.take("nope")).toBeUndefined();
+    expect(loop.size()).toBe(1);
+  });
+
+  it("removes and returns the entry, and no tick releases it", () => {
+    const f = setup();
+    const loop = createClockLoop(f.deps);
+    loop.add(entry("hold-1", START + 2000));
+    loop.add(entry("hold-2", START + 4000));
+    const taken = loop.take("hold-1");
+    expect(taken?.id).toBe("hold-1");
+    expect(loop.size()).toBe(1);
+    f.advance(10_000);
+    expect(f.released.map((r) => r.entry.id)).toEqual(["hold-2"]);
+    expect(f.ticks[0]?.map((r) => r.id)).toEqual(["hold-2"]);
+  });
+
+  it("stops the interval when the last entry is taken", () => {
+    const f = setup();
+    const loop = createClockLoop(f.deps);
+    loop.add(entry("hold-1", START + 2000));
+    expect(f.active()).toBe(true);
+    loop.take("hold-1");
+    expect(f.active()).toBe(false);
+    expect(f.cleared()).toBe(1);
+    expect(loop.size()).toBe(0);
+  });
+
+  it("keeps the interval while other entries remain", () => {
+    const f = setup();
+    const loop = createClockLoop(f.deps);
+    loop.add(entry("hold-1", START + 2000));
+    loop.add(entry("hold-2", START + 4000));
+    loop.take("hold-1");
+    expect(f.active()).toBe(true);
+    expect(f.cleared()).toBe(0);
+  });
+
+  it("starts a new interval when an entry is added after a take", () => {
+    const f = setup();
+    const loop = createClockLoop(f.deps);
+    loop.add(entry("hold-1", START + 2000));
+    loop.take("hold-1");
+    loop.add(entry("hold-2", START + 4000));
+    expect(f.created()).toBe(2);
+    expect(f.active()).toBe(true);
+  });
+});

@@ -23,53 +23,59 @@
         </div>
 
         <form id="compose-form" novalidate>
-          <div class="field-pair">
-            <div class="field">
-              <label for="city">Dateline city</label>
-              <input id="city" name="city" type="text" autocomplete="off" />
-            </div>
-            <div class="field">
-              <label for="priority">Priority</label>
-              <div class="select-wrap">
-                <select id="priority" name="priority">
-                  <option value="FLASH">FLASH</option>
-                  <option value="BULLETIN">BULLETIN</option>
-                  <option value="URGENT">URGENT</option>
-                  <option value="ROUTINE" selected>ROUTINE</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <label for="headline">Headline</label>
-            <input id="headline" name="headline" type="text" autocomplete="off" />
-          </div>
-          <div class="field">
-            <label for="body">Body</label>
-            <textarea id="body" name="body" rows="5" aria-describedby="body-hint"></textarea>
-            <span class="visually-hidden" id="body-hint">Blank line between paragraphs.</span>
-          </div>
-
-          <fieldset class="claims">
-            <legend>Claims</legend>
-            <p class="hint" id="claims-hint">Each claim needs a source URL.</p>
-            <div id="claims" aria-describedby="claims-hint"></div>
-            <button type="button" id="add-claim" class="btn">Add claim</button>
-          </fieldset>
-
-          <fieldset class="embargo" title="UTC, empty date: release now.">
-            <legend>Embargo</legend>
-            <span class="visually-hidden" id="embargo-hint">Optional. UTC, empty date: release now.</span>
+          <!-- Visible reason while a story is held. Text is set by main.ts. -->
+          <p id="lock-reason" class="lock-reason" hidden></p>
+          <!-- All form fields sit in this fieldset. main.ts disables it while a
+               story is held. The ids inside do not change. -->
+          <fieldset id="form-fields" class="form-fields">
             <div class="field-pair">
               <div class="field">
-                <label for="embargo-date">Embargo date (UTC)</label>
-                <input id="embargo-date" name="embargoDate" type="date" aria-describedby="embargo-hint" />
+                <label for="city">Dateline city</label>
+                <input id="city" name="city" type="text" autocomplete="off" />
               </div>
               <div class="field">
-                <label for="embargo-time">Embargo time (UTC)</label>
-                <input id="embargo-time" name="embargoTime" type="time" aria-describedby="embargo-hint" />
+                <label for="priority">Priority</label>
+                <div class="select-wrap">
+                  <select id="priority" name="priority">
+                    <option value="FLASH">FLASH</option>
+                    <option value="BULLETIN">BULLETIN</option>
+                    <option value="URGENT">URGENT</option>
+                    <option value="ROUTINE" selected>ROUTINE</option>
+                  </select>
+                </div>
               </div>
             </div>
+            <div class="field">
+              <label for="headline">Headline</label>
+              <input id="headline" name="headline" type="text" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="body">Body</label>
+              <textarea id="body" name="body" rows="5" aria-describedby="body-hint"></textarea>
+              <span class="visually-hidden" id="body-hint">Blank line between paragraphs.</span>
+            </div>
+
+            <fieldset class="claims">
+              <legend>Claims</legend>
+              <p class="hint" id="claims-hint">Each claim needs a source URL.</p>
+              <div id="claims" aria-describedby="claims-hint"></div>
+              <button type="button" id="add-claim" class="btn">Add claim</button>
+            </fieldset>
+
+            <fieldset class="embargo" title="UTC, empty date: release now.">
+              <legend>Embargo</legend>
+              <span class="visually-hidden" id="embargo-hint">Optional. UTC, empty date: release now.</span>
+              <div class="field-pair">
+                <div class="field">
+                  <label for="embargo-date">Embargo date (UTC)</label>
+                  <input id="embargo-date" name="embargoDate" type="date" aria-describedby="embargo-hint" />
+                </div>
+                <div class="field">
+                  <label for="embargo-time">Embargo time (UTC)</label>
+                  <input id="embargo-time" name="embargoTime" type="time" aria-describedby="embargo-hint" />
+                </div>
+              </div>
+            </fieldset>
           </fieldset>
         </form>
 
