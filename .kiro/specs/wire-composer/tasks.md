@@ -11,7 +11,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
   - Write `src/core/types.test.ts`: checks the constants have the required values and that a sample `Draft` object type-checks.
   - Requirements: 1.1, 1.2, 6.4.
 
-- [ ] 2. Teletype wrapping (`src/core/wrap.ts`)
+- [x] 2. Teletype wrapping (`src/core/wrap.ts`)
   - Implement `splitLongWord`, `wrapParagraph`, and `wrapText(text, max = MAX_COLUMNS)` as in design.md. Pure, `\n` line endings, no locale APIs.
   - Write `src/core/wrap.prop.test.ts` with fast-check: (a) for any text and any max from 1 to 100, no line exceeds max; the non-whitespace characters of the output equal the input's in order; when every word fits, the output word list equals the input word list.
   - Include a property that words longer than 69 are hard-split with no characters lost, and example tests for a blank-line paragraph break and an exactly 69-column word.
