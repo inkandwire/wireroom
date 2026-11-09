@@ -4,7 +4,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
 
 Rules for every task: follow `.kiro/steering/*.md`; add no dependency; use named exports only; `src/core` stays pure (no clock, DOM, network or randomness); `src/ui` imports the core only from `src/core/index.ts`; keep every existing id and class.
 
-- [ ] 1. Core: embargo clock (`src/core/embargoClock.ts`, `src/core/index.ts`)
+- [x] 1. Core: embargo clock (`src/core/embargoClock.ts`, `src/core/index.ts`)
   - Implement `HeldEntry`, `Countdown`, `ReleasedOne`, `countdown` and `releaseDue` exactly as in design.md, and add the export line to `src/core/index.ts`.
   - Write `src/core/embargoClock.test.ts`: labels at 0 ms (`RELEASING`), 1 ms (`T-00:00:01`), 59 999 ms, exactly 24 h (`T-1d 00:00:00`) and 90 061 s (`T-1d 01:01:01`); an invalid `releaseAt`; `due` flips exactly at `releaseAt` and not 1 ms before; `releaseDue` releases only due entries, keeps order, and composes with `releaseAt` as `now` (dateline checked).
   - Write `src/core/embargoClock.prop.test.ts` with fast-check: remaining time never increases as `nowMs` grows; `remainingMs >= 0`; the label matches `^(T-(\d+d )?\d{2}:\d{2}:\d{2}|RELEASING|T-\?\?:\?\?:\?\?)$`; `released` plus `stillHeld` is a partition of the input for any list and `nowMs`; a second `releaseDue` on `stillHeld` with the same time releases nothing; a deep-frozen input is not mutated; the output is deterministic.
