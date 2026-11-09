@@ -1,0 +1,102 @@
+---
+inclusion: always
+---
+
+# WireRoom: Design
+
+Visual and sound language for the browser UI in `src/ui`. Every UI spec and task follows this file. The theme is presentation only and never gets in the way of the claim gate or the embargo clock (see `product.md`).
+
+## Directions considered
+
+1. **Newsprint and carbon ink.** Warm cream page, black type, rules and columns. Readable and period-correct, but it looks like a newspaper, not a machine.
+2. **Green-phosphor terminal.** Black screen, green text. Instantly "old computer", but it is 1980s, invites glow effects, and has no paper, stamp or tear.
+3. **Mid-century wire room.** Green-grey metal desk, cream printer paper in carbon ink, brass controls, one red rubber stamp.
+
+**Pick: 3.** The product is the paper coming out of a machine, so the paper must be a physical object on a surface. The desk frames it, the paper keeps newsprint readability, and the red stamp is the one loud colour, which makes HOLD and rejections unmistakable.
+
+## Tokens
+
+All tokens are CSS custom properties in one `:root` block in `src/ui/tokens.css`. Components use tokens only, never raw hex or pixel values.
+
+| Token | Hex | Use |
+|---|---|---|
+| `--paper` | `#EFE6CC` | printer paper; also text on desk |
+| `--ink` | `#1B1915` | text on paper and field fill |
+| `--desk` | `#38433D` | page background, printer body |
+| `--accent` | `#E3B04B` | brass: primary button, focus ring |
+| `--stamp` | `#A82A1E` | HOLD stamp and rejection text only |
+| `--muted` | `#5B5444` | secondary text on paper and field fill |
+| `--desk-muted` | `#BFC8BF` | hints and secondary text on desk |
+| `--field` | `#F8F3E3` | input fill, rejection notice |
+| `--edge` | `#B9B08F` | input border on desk |
+
+Contrast (WCAG 2.x relative luminance). Text needs 4.5:1, large text 3:1, borders and UI 3:1.
+
+| Pair | Ratio |
+|---|---|
+| `--ink` on `--paper` | 14.09:1 |
+| `--muted` on `--paper` | 6.03:1 |
+| `--stamp` on `--paper` | 5.60:1 |
+| `--ink` on `--field` | 15.81:1 |
+| `--muted` on `--field` | 6.76:1 |
+| `--stamp` on `--field` | 6.28:1 |
+| `--paper` on `--desk` | 8.27:1 |
+| `--desk-muted` on `--desk` | 6.00:1 |
+| `--ink` on `--accent` (button text) | 8.84:1 |
+| `--accent` on `--desk` (button edge, focus ring) | 5.19:1 |
+| `--field` on `--desk` (field fill) | 9.28:1 |
+| `--edge` on `--desk` (field border) | 4.74:1 |
+
+`--stamp` is never used on `--desk` (about 1.5:1). Errors appear on `--field`, not on the desk.
+
+**Type roles.** Paper: `--font-paper: "Courier New", Courier, "Liberation Mono", "DejaVu Sans Mono", ui-monospace, monospace`. Controls: `--font-ui: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif`. No web fonts, no network requests.
+- Controls 16px (never smaller, stops iOS input zoom), line height 1.5. Labels 14px, uppercase, letter-spacing 0.04em. Page title 20px.
+- Paper: size is computed to fit 69 columns (see Layout), line height 1.35, `white-space: pre`.
+
+**Spacing** (`--space-1`..`7`): 4, 8, 12, 16, 24, 32, 48px.
+**Radius:** `--radius-paper: 1px` (near square, with a torn edge), `--radius-control: 6px` (inputs, buttons), `--radius-stamp: 3px`.
+**Borders and motion:** 2px control borders, 3px stamp border. Transitions list their properties, last at most 120ms, and are never `transition: all`.
+
+## Layout
+
+- Desktop (900px and up): two columns, `grid-template-columns: minmax(320px, 400px) minmax(0, 1fr)`, gap `--space-6`. Left is the compose form. Right is the printer: a desk-coloured body with the paper roll as a scrolling region (own vertical scroll, newest item at the bottom). Grid children get `min-width: 0`.
+- Phone (390px wide): one column, form first, printer below, page margin `--space-2`. After a successful print, scroll the printer into view.
+- No sideways page scroll at any width. Check `document.documentElement.scrollWidth <= innerWidth` at 390px.
+- **69 columns must fit.** The paper is a size container (`container-type: inline-size`). Paper font size is `clamp(8px, (100cqi - 2 * paper padding) / 42.8, 16px)`; 42.8 is 69 columns times 0.62em, a safe upper bound for the mono stack. At 390px the paper prints at about 8px. At 1280px it reaches the 16px cap. Lines are never re-wrapped for display, since wire text must stay byte-identical. Below the 8px floor, or when the user zooms, the paper box (not the page) scrolls sideways (`overflow-x: auto`, `tabindex="0"`, labelled).
+- The paper is a 1px-radius rectangle in `--paper` with a torn bottom edge made in CSS (`clip-path` zigzag, 6px teeth). No images.
+
+## Printer behaviour
+
+- **Feed:** output prints line by line. Per-character delay depends on the character, so it is deterministic: letter 14ms, space 8ms, punctuation 40ms, line end 140ms. Total print time is capped at 6s by scaling the delays down. A "Print instantly" button skips ahead to the finished item.
+- **Bell:** a FLASH item rings twice, a BULLETIN once. URGENT and routine items do not. A text label "BELL" appears next to the printer for 1.5s as a static inverted state (not a blink), also when muted.
+- **Tear:** after the `-30-` line the item is cut. The finished item shifts 3px for 120ms and keeps its torn edge, with `--space-5` before the next item. The cut plays one thunk.
+- **HOLD:** an embargoed item prints as a held proof with a `--stamp` box above the slug reading `HOLD UNTIL <release time>`, rotated -3deg, 3px border, uppercase bold mono. It is text, never colour alone, and it never covers wire text. A held item does not go to any feed.
+- **Rejection:** a draft that fails the claim gate prints nothing and makes no sound. A notice on `--field` (`role="alert"`, receives focus) starts "NOT RELEASED: N claims have no source." Then it lists each failing claim in plain words, for example `Claim "The app has 500 users" has no source URL. Add a link that backs it up.` Each entry links to its field. The UI never suggests or invents a source.
+
+## Sound
+
+WebAudio only, synthesised, no audio files. One `AudioContext`, one master gain.
+- **Key clack:** 25ms white-noise burst through a band-pass filter (centre 1800-2500Hz by character code, Q 1.2), gain 0.6 to 0.001 exponential over 30ms. Spaces are silent. At most 40 clacks per second.
+- **Carriage-return thunk:** 90ms noise burst through a low-pass at 220Hz, gain 0.5 to 0.001 exponential.
+- **Bell:** sine partials at 1320Hz, 3168Hz and 5148Hz with gains 1, 0.5, 0.25, exponential decay to 0.0001 over 1.4s.
+- **Master gain** is capped at 0.25 and no sound goes through it above that. Nothing plays louder than the bell at the cap.
+- **Muted by default.** The `AudioContext` is created or resumed only inside the first user click or key press (browser autoplay rules). Before that, nothing sounds and nothing throws.
+- **Mute toggle:** a visible `<button>` named "Mute sound" with `aria-pressed`, starting `true`. It shows the text "Muted" or "Sound on" (the name does not change). Its first press is also the gesture that unlocks audio.
+
+## Motion and accessibility
+
+- `prefers-reduced-motion: reduce`: no typing animation, the finished item appears at once, no tear shift, no smooth scrolling, no screen shake anywhere. The bell is the "BELL" text label only.
+- `:focus-visible` ring on every interactive element: 3px `--accent` outline, 2px offset, on the desk (5.19:1). Never `outline: none` without a replacement.
+- Tap targets at least 44 by 44px, including the mute toggle, Print instantly and links in the rejection list.
+- Every field has a real `<label for>`, not placeholder-only. Hints are linked with `aria-describedby`.
+- The paper has `aria-live="off"`. A separate visually hidden `role="status"` region (polite) gets the finished item text in one update after printing ends, then is cleared about 1s later so it is read once. Never announce per character.
+- Keyboard-only use works end to end: fill, print, skip, mute, read the paper. Tab order follows reading order. Esc has no hidden behaviour.
+- Errors are text with a "NOT RELEASED" prefix and a per-claim sentence. Colour only reinforces.
+
+## Do not
+
+- No emoji as icons. Use text or inline SVG drawn for the purpose.
+- No stock photos or bitmap textures.
+- No invented metrics, user counts or testimonials. All numbers shown come from the draft.
+- No marketing hero or landing copy. The app opens on the working compose form and printer.
+- No purple gradients, glow shadows, gradient text, cards inside cards, or `transition: all`.
