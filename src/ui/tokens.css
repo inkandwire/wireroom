@@ -9,6 +9,12 @@
   --field: #f8f3e3;
   --edge: #b9b08f;
 
+  /* Printer slot band, a darker shade of --desk. Decorative, carries no text
+     and no information, so it needs no contrast ratio of its own.
+     Hand-computed (WCAG 2.x): about 1.4:1 against --desk, and --paper on it
+     is about 10.8:1 (more than --paper on --desk, 8.27:1). */
+  --desk-dark: #232b26;
+
   --font-paper: "Courier New", Courier, "Liberation Mono", "DejaVu Sans Mono",
     ui-monospace, monospace;
   --font-ui: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
@@ -30,4 +36,15 @@
 
   --tap: 44px;
   --duration-fast: 120ms;
+
+  /* Paper geometry. The paper is 69 columns of text plus this padding, plus
+     room for a classic vertical scrollbar so the lines never need a sideways
+     scroll just because the roll scrolls. */
+  --paper-pad: var(--space-4);
+  --scrollbar-room: var(--space-4);
+  --slot-height: 8px;
+
+  /* Reserved width of the nameplate's right-hand slot (mute toggle and BELL
+     label, added by a later task). Fixed so filling it does not shift layout. */
+  --tools-width: 176px;
 }

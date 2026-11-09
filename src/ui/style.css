@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   background: var(--desk);
 }
@@ -17,24 +21,67 @@ body {
   line-height: 1.5;
 }
 
-h1 {
-  margin: 0 0 var(--space-4);
-  font-size: 20px;
-  line-height: 1.5;
-}
-
 h2 {
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-2);
   font-size: 14px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
+/* Nameplate (--ink on --accent 8.84:1, --desk-muted on --desk 6.00:1) */
+
+.nameplate {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "plate tools"
+    "tagline tagline";
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-2);
+  border-bottom: var(--border-control) solid var(--edge);
+}
+
+.nameplate-title {
+  grid-area: plate;
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  color: var(--ink);
+  background: var(--accent);
+  border-radius: var(--radius-control);
+  font-family: var(--font-paper);
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.nameplate-tagline {
+  grid-area: tagline;
+  margin: 0;
+  color: var(--desk-muted);
+  font-size: 14px;
+}
+
+/* Reserved slot: fixed width and height so filling it never shifts layout. */
+.nameplate-tools {
+  grid-area: tools;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  width: min(100%, var(--tools-width));
+  min-height: var(--tap);
+}
+
+/* Layout */
+
 .app {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-5);
-  padding: var(--space-2);
+  padding: var(--space-4) var(--space-2) 0;
   max-width: 100%;
 }
 
@@ -42,17 +89,53 @@ h2 {
   min-width: 0;
 }
 
-.app > h1 {
-  grid-column: 1 / -1;
-  margin: 0;
+/* Phone: the compose section dissolves into the page grid so that the action
+   bar can be the last item and stay stuck to the bottom of the viewport while
+   either the form or the printer is on screen. */
+.compose {
+  display: contents;
+}
+
+.compose > h2 {
+  margin-bottom: var(--space-3);
+}
+
+#compose-form {
+  margin-bottom: var(--space-3);
+}
+
+.printer {
+  margin-bottom: var(--space-4);
 }
 
 @media (min-width: 900px) {
+  .nameplate {
+    grid-template-columns: auto minmax(0, 1fr) var(--tools-width);
+    grid-template-areas: "plate tagline tools";
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-5);
+  }
+
   .app {
     grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
     gap: var(--space-6);
-    padding: var(--space-5);
+    padding: var(--space-4) var(--space-5) var(--space-5);
     align-items: start;
+  }
+
+  .compose {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .compose > h2 {
+    order: -2;
+  }
+
+  .printer {
+    position: sticky;
+    top: var(--space-5);
+    margin-bottom: 0;
   }
 }
 
@@ -65,19 +148,38 @@ h2 {
   margin-bottom: var(--space-3);
 }
 
+.field-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--space-3);
+}
+
+.field-pair > .field {
+  min-width: 0;
+}
+
 label,
 legend {
   font-size: 14px;
+  line-height: 1.25;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 fieldset {
   min-width: 0;
-  margin: 0 0 var(--space-4);
-  padding: var(--space-3);
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-1);
   border: var(--border-control) solid var(--edge);
   border-radius: var(--radius-control);
+}
+
+legend {
+  padding: 0 var(--space-1);
+}
+
+fieldset > .btn {
+  margin-bottom: var(--space-2);
 }
 
 input,
@@ -102,6 +204,7 @@ textarea {
 }
 
 textarea {
+  min-height: calc(2 * var(--tap));
   resize: vertical;
 }
 
@@ -109,6 +212,7 @@ textarea {
   margin: 0 0 var(--space-2);
   color: var(--desk-muted);
   font-size: 14px;
+  line-height: 1.25;
 }
 
 .btn {
@@ -139,18 +243,96 @@ textarea {
   background: var(--accent);
 }
 
+/* Claim rows: stacked on phone, text + source URL + Remove in one row on desktop. */
+
 .claim-row {
-  margin-bottom: var(--space-3);
-  padding-bottom: var(--space-3);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0 var(--space-2);
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-2);
   border-bottom: var(--border-control) solid var(--edge);
 }
 
-.examples {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.claim-row > .field {
+  margin-bottom: var(--space-2);
+}
+
+.claim-row > .claim-remove {
+  justify-self: start;
+}
+
+@media (min-width: 900px) {
+  .claim-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .claim-row > .field {
+    margin-bottom: 0;
+  }
+
+  .claim-row .field input {
+    padding-inline: var(--space-2);
+  }
+
+  .claim-row > .claim-remove {
+    justify-self: end;
+    padding-inline: var(--space-2);
+  }
+}
+
+/* Action bar: bottom of the viewport on phone, top of the compose column on desktop.
+   --edge on --desk is 4.74:1 (3:1 needed for the boundary). */
+
+.actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  order: 1;
+  display: grid;
   gap: var(--space-2);
-  margin-top: var(--space-4);
+  margin-inline: calc(-1 * var(--space-2));
+  padding: var(--space-2);
+  background: var(--desk);
+  border-top: var(--border-control) solid var(--edge);
+}
+
+.actions-main {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.actions-main > .btn {
+  flex: 1 1 auto;
+}
+
+.actions-examples {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.actions-examples > .btn {
+  padding: var(--space-1) var(--space-2);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.examples-hint {
+  margin-bottom: var(--space-3);
+}
+
+@media (min-width: 900px) {
+  .actions {
+    top: 0;
+    bottom: auto;
+    order: -1;
+    margin-inline: 0;
+    margin-bottom: var(--space-3);
+    border-top: 0;
+    border-bottom: var(--border-control) solid var(--edge);
+  }
 }
 
 :focus-visible {
@@ -171,13 +353,6 @@ textarea {
 }
 
 /* Printer */
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
-}
 
 .notice {
   display: none;
@@ -211,18 +386,44 @@ textarea {
   text-decoration: underline;
 }
 
-.paper {
+/* The stage is the size container. The paper wrap sets the font size from the
+   stage width (cq units resolve against an ancestor container, never the
+   element itself) and is exactly as wide as 69 columns plus padding, centred.
+   42.8 is 69 columns times 0.62em, a safe upper bound for the mono stack. */
+.paper-stage {
   container-type: inline-size;
+}
+
+.paper-wrap {
+  width: calc(69ch + 2 * var(--paper-pad) + var(--scrollbar-room));
+  max-width: 100%;
+  margin-inline: auto;
+  font-family: var(--font-paper);
+  font-size: 11px;
+  font-size: clamp(
+    8px,
+    calc((100cqi - 2 * var(--paper-pad) - var(--scrollbar-room)) / 42.8),
+    16px
+  );
+  line-height: 1.35;
+}
+
+.paper-slot {
+  height: var(--slot-height);
+  background: var(--desk-dark);
+  border-radius: var(--radius-stamp) var(--radius-stamp) 0 0;
+}
+
+.paper {
   max-height: 70vh;
   min-height: var(--space-7);
-  padding: var(--space-4);
+  padding: var(--paper-pad);
   overflow: auto;
+  scrollbar-gutter: stable;
   color: var(--ink);
   background: var(--paper);
-  border-radius: var(--radius-paper);
-  font-family: var(--font-paper);
-  font-size: clamp(8px, calc((100cqi - 2 * var(--space-4)) / 42.8), 16px);
-  line-height: 1.35;
+  border-radius: 0 0 var(--radius-paper) var(--radius-paper);
+  font: inherit;
   white-space: pre;
 }
 
