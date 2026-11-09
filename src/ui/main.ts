@@ -3,22 +3,26 @@ import "./style.css";
 import "./printer.css";
 import {
   composeWireItem,
+  countdown,
   entriesFromResult,
   type FeedEntry,
   type Priority,
+  type ReleasedOne,
 } from "../core/index";
+import { createClockLoop, type ClockRow } from "./clockLoop";
 import { buildExport, type ExportKind } from "./exportFeed";
 import {
   EXAMPLE_SOURCED,
   EXAMPLE_UNSOURCED,
   formToDraft,
+  formatReleaseTime,
   heldProof,
   rejectionNotice,
   timeErrorNotice,
   type ClaimRow,
   type FormValues,
 } from "./form";
-import { createPrinter } from "./printer";
+import { createPrinter, type PrintJob } from "./printer";
 import { createSound, type AudioContextLike } from "./sound";
 
 function byId<T extends HTMLElement>(id: string): T {
@@ -176,6 +180,74 @@ printer.onBusyChange((busy) => {
 });
 
 printInstantlyEl.addEventListener("click", () => printer.skip());
+
+// FIFO for prints that arrive while the printer is busy (releases from hold).
+// Items are queued in release order and none is dropped.
+const printQueue: PrintJob[] = [];
+
+function drainPrintQueue(): void {
+  while (!printer.isBusy()) {
+    const next = printQueue.shift();
+    if (next === undefined) return;
+    printer.print(next);
+  }
+}
+
+function enqueuePrint(job: PrintJob): void {
+  printQueue.push(job);
+  drainPrintQueue();
+}
+
+printer.onBusyChange((busy) => {
+  if (!busy) drainPrintQueue();
+});
+
+// ---- Embargo clock -------------------------------------------------------
+
+// Held entries live in memory for this page session only: no storage and no
+// network. This is the only place that reads the real clock for the loop.
+let holdCounter = 0;
+
+function holdItemEl(id: string): HTMLElement | null {
+  return paperEl.querySelector<HTMLElement>(`[data-hold-id="${id}"]`);
+}
+
+function onClockTick(rows: ClockRow[]): void {
+  for (const row of rows) {
+    const label = holdItemEl(row.id)?.querySelector(".countdown-label");
+    if (label && label.textContent !== row.label) label.textContent = row.label;
+  }
+}
+
+function onClockRelease(one: ReleasedOne): void {
+  if (one.result.status !== "RELEASED") return; // cannot happen after a due tick
+  const { entry, result } = one;
+
+  const itemEl = holdItemEl(entry.id);
+  itemEl?.querySelector(".stamp")?.classList.add("stamp--lifted");
+  const label = itemEl?.querySelector(".countdown-label");
+  if (label) label.textContent = "RELEASED";
+  itemEl?.querySelector(".countdown-note")?.remove();
+
+  // publishedAt is the release time, never the wake-up time.
+  sessionEntries.push(...entriesFromResult(result, entry.releaseAt));
+  renderExportKeys();
+
+  enqueuePrint({
+    kind: "released",
+    text: result.item.text,
+    priority: entry.draft.priority,
+    announce: `Released: ${result.item.slug}`,
+  });
+}
+
+const clockLoop = createClockLoop({
+  now: () => Date.now(),
+  setInterval: (fn, ms) => window.setInterval(fn, ms),
+  clearInterval: (id) => window.clearInterval(id),
+  onTick: onClockTick,
+  onRelease: onClockRelease,
+});
 
 // ---- Claim rows ----------------------------------------------------------
 
@@ -340,10 +412,12 @@ function showNotice(parts: { heading: string; entries?: { text: string; rowIndex
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   if (printer.isBusy()) return; // Print is inert while an item prints
-  const now = new Date().toISOString(); // the only clock read for the draft
+  const nowMs = Date.now(); // the only clock read for the draft
+  const now = new Date(nowMs).toISOString();
   const { draft, rowIndexes, embargoInvalid } = formToDraft(readForm(), now);
 
   if (embargoInvalid) {
+    // Never added to the clock loop.
     showNotice({ heading: timeErrorNotice(["embargo"]) });
     return;
   }
@@ -366,7 +440,19 @@ form.addEventListener("submit", (event) => {
   clearNotice();
   if (result.status === "HELD") {
     const proof = heldProof(draft, result.releaseAt);
-    printer.print({ kind: "held", stamp: proof.stamp, text: proof.text });
+    holdCounter += 1;
+    const id = `hold-${holdCounter}`;
+    printer.print({
+      kind: "held",
+      stamp: proof.stamp,
+      text: proof.text,
+      holdId: id,
+      releaseIso: result.releaseAt,
+      countdownLabel: countdown(result.releaseAt, nowMs).label,
+      announce: `Held until ${formatReleaseTime(result.releaseAt)}`,
+    });
+    // Not in any feed until the loop releases it.
+    clockLoop.add({ id, draft, releaseAt: result.releaseAt });
   } else {
     // Same `now` as the draft. entriesFromResult is empty for HELD/REJECTED.
     sessionEntries.push(...entriesFromResult(result, now));

@@ -1,4 +1,5 @@
 import type { Priority } from "../core/index";
+import { formatReleaseTime } from "./form";
 import { buildTimeline, type PlaybackEvent } from "./playback";
 import type { Sound } from "./sound";
 
@@ -16,8 +17,26 @@ export interface PrinterDeps {
 }
 
 export type PrintJob =
-  | { kind: "released"; text: string; priority: Priority }
-  | { kind: "held"; stamp: string; text: string };
+  | {
+      kind: "released";
+      text: string;
+      priority: Priority;
+      /** Replaces the status text, for example `Released: <slug>`. */
+      announce?: string;
+    }
+  | {
+      kind: "held";
+      stamp: string;
+      text: string;
+      /** Id of the held entry; adds the countdown line to the proof sheet. */
+      holdId?: string;
+      /** Release instant (ISO UTC), written to `<time datetime>`. */
+      releaseIso?: string;
+      /** First countdown label, supplied by the caller (it owns the clock). */
+      countdownLabel?: string;
+      /** Replaces the status text, for example `Held until <time>`. */
+      announce?: string;
+    };
 
 export interface Printer {
   print(job: PrintJob): void; // ignored while busy
@@ -33,6 +52,8 @@ export const BELL_LABEL_ON_CLASS = "bell-label--on";
 export const ITEM_CUT_CLASS = "item--cut";
 export const ITEM_SHIFT_CLASS = "item--shift";
 export const CARET_CLASS = "caret";
+export const COUNTDOWN_NOTE =
+  "Kept in this page only. Closing it cancels the release.";
 
 export function createPrinter(deps: PrinterDeps): Printer {
   const listeners: Array<(busy: boolean) => void> = [];
@@ -168,6 +189,7 @@ export function createPrinter(deps: PrinterDeps): Printer {
     item.className = "item";
     if (job.kind === "held") {
       item.classList.add("item--held");
+      if (job.holdId !== undefined) item.dataset.holdId = job.holdId;
       const stamp = doc.createElement("div");
       stamp.className = "stamp";
       stamp.textContent = job.stamp;
@@ -189,6 +211,29 @@ export function createPrinter(deps: PrinterDeps): Printer {
       caretEl = caret;
     }
     item.append(pre);
+
+    // Countdown line of a held proof. Not a live region: the status region
+    // never hears it, and the paper is aria-live="off".
+    if (
+      job.kind === "held" &&
+      job.holdId !== undefined &&
+      job.releaseIso !== undefined
+    ) {
+      const line = doc.createElement("p");
+      line.className = "countdown";
+      const label = doc.createElement("span");
+      label.className = "countdown-label";
+      label.textContent = job.countdownLabel ?? "T-??:??:??";
+      const time = doc.createElement("time");
+      time.className = "countdown-time";
+      time.dateTime = job.releaseIso;
+      time.textContent = formatReleaseTime(job.releaseIso);
+      const note = doc.createElement("span");
+      note.className = "countdown-note";
+      note.textContent = COUNTDOWN_NOTE;
+      line.append(label, " ", time, note);
+      item.append(line);
+    }
     deps.paper.append(item);
 
     itemEl = item;
@@ -203,7 +248,8 @@ export function createPrinter(deps: PrinterDeps): Printer {
     hideBellLabel();
     reduced = deps.reducedMotion();
     statusText =
-      job.kind === "held" ? `Item held, not released. ${job.stamp}.` : job.text;
+      job.announce ??
+      (job.kind === "held" ? `Item held, not released. ${job.stamp}.` : job.text);
 
     buildItem(job);
     // A held proof has no bell: it is not a release.

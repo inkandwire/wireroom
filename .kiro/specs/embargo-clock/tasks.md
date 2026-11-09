@@ -18,7 +18,7 @@ Rules for every task: follow `.kiro/steering/*.md`; add no dependency; use named
   - Maintainer: runs `npm test` and reports failures.
   - Requirements: 4.2, 5.1 to 5.3, 6.1, 6.2.
 
-- [ ] 3. UI wiring (`src/ui/main.ts`, `src/ui/printer.ts`, `src/ui/printer.css`, and `src/ui/form.ts` or `index.html` only if needed)
+- [x] 3. UI wiring (`src/ui/main.ts`, `src/ui/printer.ts`, `src/ui/printer.css`, and `src/ui/form.ts` or `index.html` only if needed)
   - In `main.ts`, build the loop with `Date.now()`, `window.setInterval` and `window.clearInterval`; on HELD, print the proof with `holdId` and add the `HeldEntry`; update countdown labels in `onTick`; in `onRelease`, lift the stamp, set `RELEASED <time>`, push the `FeedEntry` (`publishedAt` = `releaseAt`), call `renderExportKeys()`, and print through a FIFO that waits while the printer is busy. An invalid embargo is never added.
   - In `printer.ts`, make the smallest change: optional `holdId`, `releaseIso` and `announce` on the job; the countdown line (label span, `<time datetime>`, note) inside the held item; no live region for it; the status text `Held until <time>` and `Released: <slug>`.
   - Styles: `.countdown` (paper mono, tabular figures, tokens only), `.stamp--lifted` with a 300 ms transition of opacity and transform listed explicitly (no `transition: all`), and `prefers-reduced-motion` with no transition. No new colours.

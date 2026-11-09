@@ -227,3 +227,45 @@
   height: calc(var(--space-2) + var(--space-1));
   background: linear-gradient(to bottom, var(--shadow-ink), transparent);
 }
+
+/* Embargo clock (embargo-clock spec). Tokens only, no new colours.
+   --ink on --paper 14.09:1, --muted on --paper 6.03:1. */
+
+/* Countdown line under a held proof. Plain paragraph, not a live region.
+   Wire text is never re-wrapped; only this line wraps, inside the paper. */
+.countdown {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-paper);
+  font-variant-numeric: tabular-nums;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.countdown-label {
+  font-weight: bold;
+}
+
+.countdown-note {
+  display: block;
+  color: var(--muted);
+}
+
+/* The lifted stamp keeps its space (opacity, not display), so the sheet does
+   not jump. Properties are listed explicitly. */
+.stamp {
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease;
+}
+
+.stamp--lifted {
+  opacity: 0;
+  transform: rotate(-3deg) translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp {
+    transition: none;
+  }
+}
