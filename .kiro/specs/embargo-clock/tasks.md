@@ -11,7 +11,7 @@ Rules for every task: follow `.kiro/steering/*.md`; add no dependency; use named
   - Maintainer: runs `npm test` and reports failures.
   - Requirements: 1.1 to 1.4, 2.1, 3.1 to 3.4, 4.1.
 
-- [ ] 2. Loop: DOM-free clock loop (`src/ui/clockLoop.ts`)
+- [x] 2. Loop: DOM-free clock loop (`src/ui/clockLoop.ts`)
   - Implement `createClockLoop(deps)` with `add`, `size` and `stop` as in design.md: one 1000 ms interval for the first entry, never a second, cleared after the last release or on `stop()`; each tick reads `now()`, calls `onTick` once with every held row, then `onRelease` for each due entry in `releaseAt` order.
   - Write `src/ui/clockLoop.test.ts` with a fake clock object defined in the test file (manual `now`, recorded interval callback, `advance(ms)` firing the callback once per whole 1000 ms step): one interval for two adds; interval cleared after the last release; each item released once; several due items released in one tick after a 10-minute jump; no callback after `stop()`; `onTick` once per tick with all rows.
   - Fix anything the tests find in task 1 or here.
