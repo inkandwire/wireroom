@@ -28,7 +28,7 @@ export type PrintJob =
       kind: "held";
       stamp: string;
       text: string;
-      /** Id of the held entry; adds the countdown line to the proof sheet. */
+      /** Id of the held entry; adds the ticker to the proof sheet. */
       holdId?: string;
       /** Release instant (ISO UTC), written to `<time datetime>`. */
       releaseIso?: string;
@@ -51,9 +51,9 @@ export const STATUS_CLEAR_MS = 1000;
 export const BELL_LABEL_ON_CLASS = "bell-label--on";
 export const ITEM_CUT_CLASS = "item--cut";
 export const ITEM_SHIFT_CLASS = "item--shift";
-export const CARET_CLASS = "caret";
 export const COUNTDOWN_NOTE =
   "Kept in this page only. Closing it cancels the release.";
+export const TICKER_TITLE = "RELEASE IN";
 
 export function createPrinter(deps: PrinterDeps): Printer {
   const listeners: Array<(busy: boolean) => void> = [];
@@ -72,7 +72,6 @@ export function createPrinter(deps: PrinterDeps): Printer {
   let clock = 0; // virtual time of the last applied step, not a clock read
   let itemEl: HTMLElement | undefined;
   let textNode: Text | undefined;
-  let caretEl: HTMLElement | undefined; // print head, only while typing
   let statusText = "";
   let reduced = false;
 
@@ -120,8 +119,6 @@ export function createPrinter(deps: PrinterDeps): Printer {
 
   const finish = (): void => {
     clearTyping();
-    caretEl?.remove(); // the print head leaves when the item is done
-    caretEl = undefined;
     events = [];
     index = 0;
     itemEl = undefined;
@@ -199,40 +196,41 @@ export function createPrinter(deps: PrinterDeps): Printer {
     pre.className = "item-text";
     const node = doc.createTextNode("");
     pre.append(node);
-    // Static block caret marking where the next character lands. It is a
-    // sibling of the text node, so the text content that is printed and read
-    // is unchanged by it apart from the caret having no text of its own.
-    // Never created under reduced motion, where the item appears at once.
-    if (!reduced) {
-      const caret = doc.createElement("span");
-      caret.className = CARET_CLASS;
-      caret.setAttribute("aria-hidden", "true");
-      pre.append(caret);
-      caretEl = caret;
-    }
     item.append(pre);
 
-    // Countdown line of a held proof. Not a live region: the status region
-    // never hears it, and the paper is aria-live="off".
+    // Held area of a held proof: the ticker and the warning strip. Not a live
+    // region: the status region never hears it, and the paper is
+    // aria-live="off". `.countdown-label` is the node the clock loop updates.
     if (
       job.kind === "held" &&
       job.holdId !== undefined &&
       job.releaseIso !== undefined
     ) {
-      const line = doc.createElement("p");
-      line.className = "countdown";
+      const area = doc.createElement("div");
+      area.className = "hold-area";
+
+      const ticker = doc.createElement("div");
+      ticker.className = "ticker";
+      const title = doc.createElement("span");
+      title.className = "ticker-title";
+      title.textContent = TICKER_TITLE;
       const label = doc.createElement("span");
-      label.className = "countdown-label";
+      label.className = "countdown-label ticker-digits";
       label.textContent = job.countdownLabel ?? "T-??:??:??";
       const time = doc.createElement("time");
       time.className = "countdown-time";
       time.dateTime = job.releaseIso;
       time.textContent = formatReleaseTime(job.releaseIso);
-      const note = doc.createElement("span");
-      note.className = "countdown-note";
-      note.textContent = COUNTDOWN_NOTE;
-      line.append(label, " ", time, note);
-      item.append(line);
+      ticker.append(title, label, time);
+
+      // The warning mark is drawn by CSS (aria-hidden by construction), so the
+      // text of this element is exactly the sentence.
+      const warning = doc.createElement("p");
+      warning.className = "hold-warning";
+      warning.textContent = COUNTDOWN_NOTE;
+
+      area.append(ticker, warning);
+      item.append(area);
     }
     deps.paper.append(item);
 

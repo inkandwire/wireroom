@@ -9,6 +9,18 @@
   --field: #f8f3e3;
   --edge: #b9b08f;
 
+  /* Held state (design-pass-2, task 3).
+     --stamp-deep: HOLD stamp border and text, warning mark and warning edge.
+     7.16:1 on --paper and 8.04:1 on --field (4.5:1 needed).
+     --ticker: fill of the countdown strip. --accent digits on it 9.48:1,
+     --paper on it 15.11:1, --desk-muted on it 10.96:1.
+     --stamp-speckle: the ink speckle on the stamp, the --stamp-deep tone at
+     low alpha (small dots only, decoration).
+     Hand-computed, WCAG 2.x. */
+  --stamp-deep: #8f1d14;
+  --ticker: #14110d;
+  --stamp-speckle: rgba(143, 29, 20, 0.18);
+
   /* Small grey-green key (secondary buttons, mute toggle). --paper on --key
      is about 5.65:1 (4.5:1 needed). The key edge is --edge on --desk (4.74:1,
      3:1 needed). Hand-computed, WCAG 2.x. */
@@ -54,6 +66,7 @@
 
   --border-control: 2px;
   --border-stamp: 3px;
+  --border-stamp-heavy: 4px;
 
   --tap: 44px;
   --duration-fast: 120ms;

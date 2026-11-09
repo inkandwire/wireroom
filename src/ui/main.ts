@@ -231,7 +231,7 @@ function onClockRelease(one: ReleasedOne): void {
   itemEl?.querySelector(".stamp")?.classList.add("stamp--lifted");
   const label = itemEl?.querySelector(".countdown-label");
   if (label) label.textContent = "RELEASED";
-  itemEl?.querySelector(".countdown-note")?.remove();
+  itemEl?.querySelector(".hold-warning")?.remove();
 
   // publishedAt is the release time, never the wake-up time.
   sessionEntries.push(...entriesFromResult(result, entry.releaseAt));

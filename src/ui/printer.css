@@ -51,17 +51,6 @@
   cursor: not-allowed;
 }
 
-/* Print head: a static block one character wide at the end of the printed
-   text. No blink and no animation. It is aria-hidden, removed when the item
-   finishes, and never created under reduced motion. */
-.caret {
-  display: inline-block;
-  width: 1ch;
-  height: 1.1em;
-  vertical-align: text-bottom;
-  background: var(--ink);
-}
-
 /* Printed item states. A cut item is its own sheet: a dashed perforation
    directly under the last line (--muted on --paper 6.03:1, 3:1 needed), then a
    torn bottom edge. The space before the next sheet is the margin on
@@ -93,10 +82,6 @@
 @media (prefers-reduced-motion: reduce) {
   .item--shift {
     animation: none;
-  }
-
-  .caret {
-    display: none;
   }
 }
 
@@ -287,32 +272,128 @@
   background: linear-gradient(to bottom, var(--shadow-ink), transparent);
 }
 
-/* Embargo clock (embargo-clock spec). Tokens only, no new colours.
-   --ink on --paper 14.09:1, --muted on --paper 6.03:1. */
-
-/* Countdown line under a held proof. Plain paragraph, not a live region.
-   Wire text is never re-wrapped; only this line wraps, inside the paper. */
-.countdown {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--font-paper);
-  font-variant-numeric: tabular-nums;
-  white-space: pre-wrap;
+/* Held area (design-pass-2, task 3). Tokens only, no animation, so reduced
+   motion needs nothing here. The paper item is `white-space: pre`, so the
+   held area sets `normal` and its sentences wrap inside the paper.
+   None of it is a live region: the status region never hears it and the paper
+   is aria-live="off". */
+.hold-area {
+  margin: var(--space-3) 0 0;
+  white-space: normal;
   overflow-wrap: anywhere;
+}
+
+/* Ticker: a dark recessed strip, like a flip-clock window.
+   --accent digits on --ticker 9.48:1, --paper on --ticker 15.11:1,
+   --desk-muted on --ticker 10.96:1 (4.5:1 needed). */
+.ticker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+  background: var(--ticker);
+  border: var(--border-control) solid var(--desk-dark);
+  border-radius: var(--radius-control);
+  box-shadow: inset 0 var(--space-1) var(--space-2) var(--shadow-ink);
+  font-family: var(--font-paper);
+}
+
+.ticker-title {
+  color: var(--desk-muted);
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Segmented look: wide tracking, tabular digits and a hairline seam across the
+   middle of the digits, like the split of a flip counter. Phone: 24px or more.
+   The 900px media query below raises it to 32px or more. */
+.ticker-digits {
+  padding: 0 var(--space-1);
+  color: var(--accent);
+  background: linear-gradient(
+    to bottom,
+    transparent calc(50% - 1px),
+    var(--desk-dark) calc(50% - 1px) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+  font-size: clamp(24px, 4vw, 40px);
+  font-variant-numeric: tabular-nums;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.ticker .countdown-time {
+  color: var(--paper);
+  font-size: 14px;
 }
 
 .countdown-label {
   font-weight: bold;
 }
 
-.countdown-note {
-  display: block;
-  color: var(--muted);
+/* Warning strip: --ink on --field 15.81:1. The mark is a generated "!" in a
+   --stamp-deep square (--field on --stamp-deep 8.04:1); its alternative text is
+   empty, so it is not read. The text is 16px on a phone and 14px from 900px
+   up. The sentence is the only text node, so its text is exact. */
+.hold-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  color: var(--ink);
+  background: var(--field);
+  border-left: var(--border-stamp-heavy) solid var(--stamp-deep);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.4;
 }
 
-/* The lifted stamp keeps its space (opacity, not display), so the sheet does
-   not jump. Properties are listed explicitly. */
+.hold-warning::before {
+  content: "!";
+  content: "!" / "";
+  flex: 0 0 auto;
+  width: 1.4em;
+  height: 1.4em;
+  color: var(--field);
+  background: var(--stamp-deep);
+  border-radius: var(--radius-control);
+  font-weight: bold;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .ticker-digits {
+    font-size: clamp(32px, 3vw, 40px);
+  }
+
+  .hold-warning {
+    font-size: 14px;
+  }
+}
+
+/* HOLD stamp: --stamp-deep text and 4px border (7.16:1 on --paper), a speckle
+   of two small radial-gradient dot layers in the same ink at low alpha, still
+   rotated -3deg, text and never over wire text. The lifted stamp keeps its
+   space (opacity, not display), so the sheet does not jump. Properties are
+   listed explicitly. */
 .stamp {
+  color: var(--stamp-deep);
+  border: var(--border-stamp-heavy) solid var(--stamp-deep);
+  background-image:
+    radial-gradient(circle at 20% 30%, var(--stamp-speckle) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 65%, var(--stamp-speckle) 0 2px, transparent 3px);
+  background-size:
+    9px 7px,
+    13px 11px;
   transition:
     opacity 300ms ease,
     transform 300ms ease;

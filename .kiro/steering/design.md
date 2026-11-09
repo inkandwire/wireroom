@@ -23,15 +23,19 @@ All tokens are CSS custom properties in one `:root` block in `src/ui/tokens.css`
 | `--paper` | `#EFE6CC` | printer paper; also text on desk |
 | `--ink` | `#1B1915` | text on paper and field fill |
 | `--desk` | `#38433D` | page background, printer body |
-| `--accent` | `#E3B04B` | brass: primary button, focus ring |
-| `--stamp` | `#A82A1E` | HOLD stamp and rejection text only |
+| `--accent` | `#E3B04B` | brass: primary button, focus ring, ticker digits |
+| `--stamp` | `#A82A1E` | rejection text only |
+| `--stamp-deep` | `#8F1D14` | HOLD stamp border and text, warning mark and warning edge |
+| `--ticker` | `#14110D` | countdown ticker strip fill |
 | `--muted` | `#5B5444` | secondary text on paper and field fill |
-| `--desk-muted` | `#BFC8BF` | hints and secondary text on desk |
-| `--field` | `#F8F3E3` | input fill, rejection notice |
+| `--desk-muted` | `#BFC8BF` | hints and secondary text on desk; "RELEASE IN" on the ticker |
+| `--field` | `#F8F3E3` | input fill, rejection notice, warning strip |
 | `--edge` | `#B9B08F` | input border on desk |
 | `--key` | `#4F5C54` | small grey-green key fill (secondary buttons, feed keys) |
 | `--desk-dark` | `#232B26` | key bottom edge, field outer line, printer bar |
 | `--brass-dark` | `#9A7220` | Print keycap border and bottom edge |
+
+`--stamp-speckle` (`rgba(143, 29, 20, 0.18)`) is the `--stamp-deep` tone at low alpha for the ink speckle on the stamp. It is decoration (small dots), not a text colour.
 
 Contrast (WCAG 2.x relative luminance). Text needs 4.5:1, large text 3:1, borders and UI 3:1.
 
@@ -40,24 +44,30 @@ Contrast (WCAG 2.x relative luminance). Text needs 4.5:1, large text 3:1, border
 | `--ink` on `--paper` | 14.09:1 |
 | `--muted` on `--paper` | 6.03:1 |
 | `--stamp` on `--paper` | 5.60:1 |
+| `--stamp-deep` on `--paper` (HOLD stamp text and border) | 7.16:1 |
 | `--ink` on `--field` | 15.81:1 |
 | `--muted` on `--field` | 6.76:1 |
 | `--stamp` on `--field` | 6.28:1 |
+| `--stamp-deep` on `--field` (warning edge, mark fill) | 8.04:1 |
+| `--field` on `--stamp-deep` (warning mark "!") | 8.04:1 |
 | `--paper` on `--desk` | 8.27:1 |
 | `--desk-muted` on `--desk` | 6.00:1 |
 | `--ink` on `--accent` (button text) | 8.84:1 |
 | `--accent` on `--desk` (button edge, focus ring) | 5.19:1 |
+| `--accent` on `--ticker` (ticker digits) | 9.48:1 |
+| `--paper` on `--ticker` (release time) | 15.11:1 |
+| `--desk-muted` on `--ticker` ("RELEASE IN") | 10.96:1 |
 | `--field` on `--desk` (field fill) | 9.28:1 |
 | `--edge` on `--desk` (field border, date and time well border) | 4.74:1 |
 | `--paper` on `--key` (secondary key text, feed key text) | 5.65:1 |
 | `--paper` on `--ink` (key hover) | 14.09:1 |
 | `--desk-muted` on `--desk` (disabled key text, inert feed key) | 6.00:1 |
-| `--ink` on `--field` (mono field text, date and time text) | 15.81:1 |
+| `--ink` on `--field` (mono field text, date and time text, warning text) | 15.81:1 |
 | `--ink` on `--field` (calendar and clock icon strokes, UI needs 3:1) | 15.81:1 |
 
 The key fill `--key` against `--desk` is only about 1.6:1, so a key never relies on its fill for its boundary: the 2px `--edge` border (4.74:1 on `--desk`) draws it. The Print keycap border `--brass-dark` is decoration; its fill `--accent` is 5.19:1 on `--desk`. The ratios above were computed by hand from the hex values.
 
-`--stamp` is never used on `--desk` (about 1.5:1). Errors appear on `--field`, not on the desk.
+`--stamp` and `--stamp-deep` are never used on `--desk` (about 1.5:1 and lower). Errors appear on `--field`, not on the desk.
 
 **Type roles.** Paper: `--font-paper: "Courier New", Courier, "Liberation Mono", "DejaVu Sans Mono", ui-monospace, monospace`. Controls: `--font-ui: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif`. No web fonts, no network requests.
 - Field text is paper mono, 16px (never smaller, stops iOS input zoom), line height 1.5. Labels are paper mono, 14px, uppercase, letter-spacing 0.04em (typewriter labels). Page title 20px. Keys use the control font, 14px; Print 16px bold.
@@ -66,7 +76,7 @@ The key fill `--key` against `--desk` is only about 1.6:1, so a key never relies
 **Spacing** (`--space-1`..`7`): 4, 8, 12, 16, 24, 32, 48px.
 **Icons and feed keys** (no colour): `--icon-size: 20px` (calendar and clock icons), `--feed-key-pad-x: var(--space-3)` (horizontal padding of a feed key).
 **Radius:** `--radius-paper: 1px` (near square, with a torn edge), `--radius-control: 2px` (inputs, keys, square period corners), `--radius-stamp: 3px`.
-**Borders and motion:** 2px control borders, 3px stamp border. Transitions list their properties, last at most 120ms, and are never `transition: all`.
+**Borders and motion:** 2px control borders, 4px stamp border (`--border-stamp-heavy`). Transitions list their properties, last at most 120ms (the stamp lift is the one longer, 300ms, and is removed under reduced motion), and are never `transition: all`.
 
 ## Controls
 
@@ -88,10 +98,12 @@ The key fill `--key` against `--desk` is only about 1.6:1, so a key never relies
 
 ## Printer behaviour
 
-- **Feed:** output prints line by line. Per-character delay depends on the character, so it is deterministic: letter 14ms, space 8ms, punctuation 40ms, line end 140ms. Total print time is capped at 6s by scaling the delays down. A "Print instantly" button skips ahead to the finished item.
+- **Feed:** output prints line by line. Per-character delay depends on the character, so it is deterministic: letter 14ms, space 8ms, punctuation 40ms, line end 140ms. Total print time is capped at 6s by scaling the delays down. A "Print instantly" button skips ahead to the finished item. There is no block cursor or print-head marker on the paper in any state.
 - **Bell:** a FLASH item rings twice, a BULLETIN once. URGENT and routine items do not. A text label "BELL" appears next to the printer for 1.5s as a static inverted state (not a blink), also when muted.
 - **Tear:** after the `-30-` line the item is cut. The finished item shifts 3px for 120ms and keeps its torn edge, with `--space-5` before the next item. The cut plays one thunk.
-- **HOLD:** an embargoed item prints as a held proof with a `--stamp` box above the slug reading `HOLD UNTIL <release time>`, rotated -3deg, 3px border, uppercase bold mono. It is text, never colour alone, and it never covers wire text. A held item does not go to any feed.
+- **HOLD:** an embargoed item prints as a held proof with a stamp box above the slug reading `HOLD UNTIL <release time>`: `--stamp-deep` text, 4px `--stamp-deep` border, a CSS ink speckle, rotated -3deg, uppercase bold mono. It is text, never colour alone, and it never covers wire text. A held item does not go to any feed.
+- **Ticker:** under the held proof, a dark recessed strip (`.ticker`, `--ticker` fill) shows the label "RELEASE IN", the `T-hh:mm:ss` digits (`.ticker-digits`, also `.countdown-label`, `--accent`, tabular digits, wide tracking, a hairline seam across the middle) and the release time. The digits are at least 32px from 900px wide and at least 24px on a phone. The ticker is not a live region.
+- **Warning strip:** `.hold-warning` sits under the ticker on `--field` with `--ink` text, a 4px `--stamp-deep` left edge and a small aria-hidden "!" mark. It reads "Kept in this page only. Closing it cancels the release." and is at least 14px on desktop and 16px on a phone.
 - **Rejection:** a draft that fails the claim gate prints nothing and makes no sound. A notice on `--field` (`role="alert"`, receives focus) starts "NOT RELEASED: N claims have no source." Then it lists each failing claim in plain words, for example `Claim "The app has 500 users" has no source URL. Add a link that backs it up.` Each entry links to its field. The UI never suggests or invents a source.
 
 ## Sound
@@ -121,3 +133,4 @@ WebAudio only, synthesised, no audio files. One `AudioContext`, one master gain.
 - No invented metrics, user counts or testimonials. All numbers shown come from the draft.
 - No marketing hero or landing copy. The app opens on the working compose form and printer.
 - No purple gradients, glow shadows, gradient text, cards inside cards, or `transition: all`.
+- No block cursor character (U+2588) or `.caret` block on the paper.
