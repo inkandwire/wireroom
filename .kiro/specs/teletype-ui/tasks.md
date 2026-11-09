@@ -11,7 +11,7 @@ Rules for every task: add files only in `src/ui` (plus `index.html` at the root)
   - Add a few example tests: `charDelayMs` for a letter, a digit, a space, `.` and `\n`; a one-line text with known times; a text that needs scaling.
   - Requirements: 9.1 to 9.10, 11.4, 17.4, 17.6.
 
-- [ ] 2. WebAudio sound module (`src/ui/sound.ts`)
+- [x] 2. WebAudio sound module (`src/ui/sound.ts`)
   - Implement `createSound(deps, masterGain?)` as in design.md, with the structural `AudioContextLike` types, `MASTER_GAIN_MAX = 0.25` and `MAX_CLACKS_PER_SECOND = 40`. All browser objects come in through `deps` (`createContext` and a `now` clock in ms). No `window`, no global `AudioContext`, no `Date.now()`, no `performance.now()`, no `Math.random` (use a fixed-seed LCG for the noise samples).
   - Behaviour: muted by default; nothing is created or started before `unlock()`; `unlock()` makes one context and one master gain (value capped at 0.25), resumes it, and never throws, even for a missing, `undefined`-returning or throwing factory, or a rejected `resume()`. Voices: key clack, carriage-return thunk, bell, with the numbers from design.md. Every voice connects through the master gain only. Spaces and newlines make no clack. At most 40 clacks per 1000 ms, using the injected clock.
   - Write `src/ui/sound.test.ts` with a small fake `AudioContext` that records created nodes, `connect` calls, `start` calls and gain values.
