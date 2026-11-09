@@ -8,7 +8,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
   - Write `src/core/slug.prop.test.ts` with fast-check, building the expected word list independently in the test (uppercase, replace runs of non-`A-Z0-9` with a space, split, drop empties): for any headline string, the slug length is at most 24, never starts or ends with `-`, has no `--`; an empty word list gives `NEWS`; if the first word is longer than 24 the slug is exactly its first 24 characters; otherwise every hyphen-separated part is a headline word, the parts are a prefix of the word list, and adding the next word (if any) would exceed 24.
   - Requirements: 1.1 to 1.8, 6.1, 6.4, 6.5.
 
-- [ ] 2. Claims and sources footer and JSON export
+- [x] 2. Claims and sources footer and JSON export
   - In `src/core/types.ts`, add `ReleasedClaim { text: string; sourceUrl: string }` and add `claims: ReleasedClaim[]` and `sources: string[]` to `WireItem` (doc comments as in design.md).
   - In `src/core/compose.ts`, build `claims` (draft order, unchanged text and URL) and `sources` (distinct, first-use order) after the gate passes; add the private `sourcesFooter` helper (collapse whitespace per entry, `wrapText` per entry, `Sources:` heading, numbered `<n>. <text> <url>`); assemble the text so that zero claims gives exactly the old text and one or more claims put the footer after the body and before the end marker; return the new fields on the `RELEASED` item only.
   - Create `src/core/wireJson.ts` with `wireItemToJson(item: WireItem): string` using `JSON.stringify` with the key order `slug`, `priority`, `dateline`, `text`, `claims`, `sources`, claim key order `text`, `sourceUrl`, two-space indent, no trailing newline.

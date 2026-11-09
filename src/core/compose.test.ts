@@ -103,9 +103,79 @@ describe("composeWireItem", () => {
         "",
         "The app has 500 users, the company said.",
         "",
+        "Sources:",
+        "1. 500 users https://example.com/users",
+        "",
         "-30-",
       ].join("\n"),
     );
+  });
+
+  it("returns claims and sources on the item", () => {
+    const result = composeWireItem(baseDraft());
+    if (result.status !== "RELEASED") throw new Error("expected RELEASED");
+    expect(result.item.claims).toEqual([
+      { text: "500 users", sourceUrl: "https://example.com/users" },
+    ]);
+    expect(result.item.sources).toEqual(["https://example.com/users"]);
+  });
+
+  it("keeps the old text and has no Sources line when there are no claims", () => {
+    const result = composeWireItem(baseDraft({ claims: [] }));
+    if (result.status !== "RELEASED") throw new Error("expected RELEASED");
+    expect(result.item.claims).toEqual([]);
+    expect(result.item.sources).toEqual([]);
+    expect(result.item.text).not.toContain("Sources:");
+    expect(result.item.text).toBe(
+      [
+        "ACME-LAUNCH",
+        "BULLETIN",
+        "",
+        "AUSTIN, Mar. 4 (WireRoom) -- Acme released its app.",
+        "",
+        "The app has 500 users, the company said.",
+        "",
+        "-30-",
+      ].join("\n"),
+    );
+  });
+
+  it("prints an empty claim text as `1. <url>`", () => {
+    const result = composeWireItem(
+      baseDraft({ claims: [{ text: "", sourceUrl: "https://example.com/a" }] }),
+    );
+    if (result.status !== "RELEASED") throw new Error("expected RELEASED");
+    expect(result.item.text).toContain("\nSources:\n1. https://example.com/a\n");
+  });
+
+  it("hard-splits a URL longer than 69 columns in the text only", () => {
+    const url = `https://example.com/${"a".repeat(100)}`;
+    const result = composeWireItem(
+      baseDraft({ claims: [{ text: "big", sourceUrl: url }] }),
+    );
+    if (result.status !== "RELEASED") throw new Error("expected RELEASED");
+    for (const line of result.item.text.split("\n")) {
+      expect(line.length).toBeLessThanOrEqual(69);
+    }
+    expect(result.item.text.includes(url)).toBe(false);
+    expect(result.item.sources).toEqual([url]);
+    expect(result.item.claims[0].sourceUrl).toBe(url);
+  });
+
+  it("dedupes sources but keeps one footer entry per claim", () => {
+    const url = "https://example.com/same";
+    const result = composeWireItem(
+      baseDraft({
+        claims: [
+          { text: "one", sourceUrl: url },
+          { text: "two", sourceUrl: url },
+        ],
+      }),
+    );
+    if (result.status !== "RELEASED") throw new Error("expected RELEASED");
+    expect(result.item.sources).toEqual([url]);
+    expect(result.item.claims).toHaveLength(2);
+    expect(result.item.text).toContain(`1. one ${url}\n2. two ${url}\n`);
   });
 
   it("puts the dateline alone when the body is empty", () => {

@@ -24,12 +24,22 @@ export interface ClaimFailure {
   reason: "MISSING_SOURCE" | "INVALID_SOURCE";
 }
 
+/** A claim that passed the gate: its source URL is present and valid. */
+export interface ReleasedClaim {
+  text: string;
+  sourceUrl: string;
+}
+
 export interface WireItem {
   slug: string;
   priorityLine: string;
   dateline: string;
   /** Full teletype text, ends with -30-. */
   text: string;
+  /** Draft claims in draft order. Only on released items. */
+  claims: ReleasedClaim[];
+  /** Distinct source URLs in order of first use. */
+  sources: string[];
 }
 
 export type ComposeResult =

@@ -5,6 +5,7 @@ import {
   MAX_SLUG_LENGTH,
   type ComposeResult,
   type Draft,
+  type ReleasedClaim,
 } from "./types";
 import { wrapText } from "./wrap";
 
@@ -60,6 +61,15 @@ export function formatDateline(city: string, nowMs: number): string {
   return `${cityText}, ${month} ${day} (WireRoom) --`;
 }
 
+/** Numbered `Sources:` footer, wrapped to 69 columns. Empty when no claims. */
+function sourcesFooter(claims: ReleasedClaim[]): string {
+  if (claims.length === 0) return "";
+  const entries = claims.map((c, i) =>
+    wrapText(`${i + 1}. ${c.text} ${c.sourceUrl}`.replace(/\s+/g, " ")),
+  );
+  return ["Sources:", ...entries].join("\n");
+}
+
 /** Gate, then embargo, then format. Wire text exists only for RELEASED results. */
 export function composeWireItem(draft: Draft): ComposeResult {
   const nowMs = parseInstant(draft.now);
@@ -97,10 +107,22 @@ export function composeWireItem(draft: Draft): ComposeResult {
     paragraphs.length > 0 ? `${dateline} ${paragraphs[0]}` : dateline;
   const wrapped = wrapText([first, ...paragraphs.slice(1)].join("\n\n"));
 
-  const text = [slug, priorityLine, "", wrapped, "", END_MARKER].join("\n");
+  const claims: ReleasedClaim[] = [];
+  const sources: string[] = [];
+  for (const c of draft.claims) {
+    if (c.sourceUrl === undefined) continue; // gate passed: cannot happen
+    claims.push({ text: c.text, sourceUrl: c.sourceUrl });
+    if (!sources.includes(c.sourceUrl)) sources.push(c.sourceUrl);
+  }
+
+  const footer = sourcesFooter(claims);
+  const parts = [slug, priorityLine, "", wrapped, ""];
+  if (footer !== "") parts.push(footer, "");
+  parts.push(END_MARKER);
+  const text = parts.join("\n");
 
   return {
     status: "RELEASED",
-    item: { slug, priorityLine, dateline, text },
+    item: { slug, priorityLine, dateline, text, claims, sources },
   };
 }

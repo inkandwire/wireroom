@@ -6,6 +6,7 @@ export {
   type Claim,
   type Draft,
   type ClaimFailure,
+  type ReleasedClaim,
   type WireItem,
   type ComposeResult,
 } from "./types";
@@ -13,3 +14,4 @@ export { splitLongWord, wrapParagraph, wrapText } from "./wrap";
 export { checkClaims, isValidSourceUrl } from "./claimGate";
 export { isReleased, parseInstant } from "./embargo";
 export { slugFromHeadline, formatDateline, composeWireItem } from "./compose";
+export { wireItemToJson } from "./wireJson";
