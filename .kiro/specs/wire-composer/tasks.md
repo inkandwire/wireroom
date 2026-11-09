@@ -17,7 +17,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
   - Include a property that words longer than 69 are hard-split with no characters lost, and example tests for a blank-line paragraph break and an exactly 69-column word.
   - Requirements: 4.1 to 4.6, 7.1.
 
-- [ ] 3. Claim gate (`src/core/claimGate.ts`)
+- [x] 3. Claim gate (`src/core/claimGate.ts`)
   - Implement `isValidSourceUrl` (absolute `http`/`https` with a host) and `checkClaims` returning `ClaimFailure[]` with `MISSING_SOURCE` / `INVALID_SOURCE`, in claim order. No repair or guessing.
   - Write `src/core/claimGate.prop.test.ts` with fast-check: (b) any claim list containing a claim with an undefined, empty, non-URL, non-http(s) scheme, or hostless URL always yields at least one failure that names that claim's index; lists of valid http/https URLs yield no failures.
   - Include example tests: `https://example.com/a` valid, `ftp://x.com` invalid, `example.com` invalid, `http://` invalid, `javascript:alert(1)` invalid, empty claim list passes.
