@@ -5,11 +5,24 @@
    --ink on --paper 14.09:1 for the lit BELL label. The slot has a fixed size,
    so the label keeps its place while hidden and nothing shifts. */
 
+/* The toggle is a small grey-green key: square 2px corners and a 2px darker
+   bottom edge (an outer shadow, so the size and the 44px target do not
+   change). --ink on --desk-muted is far above 4.5:1. */
 .mute-toggle {
   flex: 0 0 auto;
+  color: var(--ink);
+  background: var(--desk-muted);
+  border: var(--border-control) solid var(--edge);
+  border-radius: 2px;
+  box-shadow: 0 2px 0 var(--desk-dark);
 }
 
-.mute-toggle[aria-pressed="false"] {
+.mute-toggle:hover {
+  background: var(--paper);
+}
+
+.mute-toggle[aria-pressed="false"],
+.mute-toggle[aria-pressed="false"]:hover {
   color: var(--ink);
   background: var(--accent);
   font-weight: bold;
@@ -144,7 +157,10 @@
 }
 
 /* Platen: a CSS cylinder with brass end caps and a slot line. It sits above
-   the paper and overlaps it, so the paper is tucked under the roller. */
+   the paper and overlaps it, so the paper is tucked under the roller. The
+   negative bottom margin pulls the paper stage up by --slot-overlap (6px), so
+   the first sheet's top edge sits under the roller's bottom edge and no desk
+   colour shows between them. */
 .platen {
   position: relative;
   z-index: 1;

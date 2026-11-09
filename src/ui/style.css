@@ -656,12 +656,14 @@ textarea {
   container-type: inline-size;
   min-width: 0;
   max-width: 100%;
+  margin-top: 0;
 }
 
 .paper-wrap {
   width: calc(69ch + 2 * var(--paper-pad) + var(--scrollbar-room));
   max-width: 100%;
   margin-inline: auto;
+  margin-top: 0;
   font-family: var(--font-paper);
   font-size: var(--paper-font-min);
   font-size: clamp(
@@ -684,15 +686,22 @@ textarea {
    scrollbars). It has no paper colour of its own and no minimum height: each
    printed item is its own sheet and the region is exactly as tall as its
    sheets (up to the max height on phone; the printer column height on
-   desktop), so no blank paper sits under the last -30-. */
+   desktop), so no blank paper sits under the last -30-.
+   White space is `normal` here on purpose: with `pre` the line breaks and
+   indentation between the children would become blank line boxes above the
+   first sheet and leave a gap under the roller. Every element that holds paper
+   text sets `white-space: pre` itself (.item, .item-text, .stamp). The first
+   sheet starts at the very top of the roll; the platen overlaps it. */
 .paper {
   max-width: 100%;
   max-height: var(--paper-max-height);
+  margin: 0;
+  padding: 0;
   overflow: auto;
   scrollbar-gutter: stable;
   color: var(--ink);
   font: inherit;
-  white-space: pre;
+  white-space: normal;
 }
 
 .empty {
@@ -718,6 +727,7 @@ textarea {
   padding: var(--paper-pad);
   color: var(--ink);
   background: var(--paper);
+  white-space: pre;
 }
 
 /* The desk shows between two sheets. */
@@ -740,6 +750,7 @@ textarea {
   border-radius: var(--radius-stamp);
   font-weight: bold;
   text-transform: uppercase;
+  white-space: pre;
   transform: rotate(-3deg);
 }
 
