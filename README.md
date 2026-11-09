@@ -18,5 +18,6 @@ Every run appends a UTC-stamped report to `.kiro/hook-logs/claim-gate.log` (git-
 ## Source check (MCP)
 
 `.kiro/settings/mcp.json` adds the MCP `fetch` server, so Kiro can check that each `sourceUrl` in a draft resolves (rules in `.kiro/steering/source-check.md`).
-It needs `uvx` and network access; the `command` path in `mcp.json` is machine specific, so edit it on another machine.
-For non-interactive runs use `kiro-cli chat --v3 --no-interactive --trust-tools=fs_read,fs_write,@fetch`.
+Interactive use works: Kiro asks once to approve the `fetch` tool and you approve it.
+Non-interactive runs cannot trust the tool without `--trust-all-tools` (which also trusts shell), so the check is NOT run headless.
+The `uvx` path in `mcp.json` is machine specific; edit it on another machine.

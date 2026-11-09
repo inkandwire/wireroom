@@ -13,5 +13,6 @@ When a draft in `drafts/` is in context, check that its source links resolve, us
 - A claim with no `sourceUrl` is named as unsourced in the answer and is not fetched.
 - `example.com` links count as resolving, as in the examples.
 - If the fetch server cannot start, say the check could not run and list no URL as resolving.
+- If the `fetch` tool call fails at the permission step, say "CHECK NOT RUN" for each URL and never mark any URL as resolving.
 - Never edit a `sourceUrl`. Never make up a URL or suggest one.
 - This check runs in Kiro only. It does not change the claim gate, which still only checks that a URL is present.
