@@ -49,11 +49,35 @@ describe("slugFromHeadline", () => {
     expect(slugFromHeadline("Acme: launches v2.0!")).toBe("ACME-LAUNCHES-V2-0");
   });
 
-  it("caps at 24 characters with no trailing hyphen", () => {
-    const slug = slugFromHeadline("abcdefghijklmnopqrstuvw xyz more words");
-    expect(slug.length).toBeLessThanOrEqual(24);
+  it("caps at 24 characters on a word boundary", () => {
+    expect(slugFromHeadline("Acme launches widget 2 for founders")).toBe(
+      "ACME-LAUNCHES-WIDGET-2",
+    );
+  });
+
+  it("drops a word that would cross 24 whole", () => {
+    const slug = slugFromHeadline("abcdefghijklmnopqrstuvw xyz");
     expect(slug).toBe("ABCDEFGHIJKLMNOPQRSTUVW");
     expect(slug.endsWith("-")).toBe(false);
+  });
+
+  it("does not add a later short word after a skipped long one", () => {
+    expect(slugFromHeadline("aaaaaaaaaaaa bbbbbbbbbbbbbbbb c")).toBe(
+      "AAAAAAAAAAAA",
+    );
+  });
+
+  it("cuts a first word longer than 24 at exactly 24 characters", () => {
+    const word = "abcdefghijklmnopqrstuvwxyzabcd";
+    expect(word.length).toBe(30);
+    expect(slugFromHeadline(`${word} more`)).toBe(word.toUpperCase().slice(0, 24));
+  });
+
+  it("keeps a slug of exactly 24 characters", () => {
+    // 11 + 1 + 12 = 24
+    expect(slugFromHeadline("aaaaaaaaaaa bbbbbbbbbbbb")).toBe(
+      "AAAAAAAAAAA-BBBBBBBBBBBB",
+    );
   });
 
   it("gives NEWS for an empty or symbol-only headline", () => {

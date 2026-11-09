@@ -24,17 +24,31 @@ const MONTHS = [
   "Dec.",
 ] as const;
 
-function trimHyphens(s: string): string {
-  return s.replace(/^-+/, "").replace(/-+$/, "");
+function headlineWords(headline: string): string[] {
+  return headline
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, " ")
+    .split(" ")
+    .filter((w) => w !== "");
 }
 
-/** Uppercase, hyphenated slug of at most 24 characters. Empty gives NEWS. */
+/**
+ * Uppercase, hyphenated slug of at most 24 characters, built from whole
+ * headline words. Words are added until the next one would not fit; it is
+ * dropped whole and nothing after it is added. Only a first word longer than
+ * 24 characters is cut. No words gives NEWS.
+ */
 export function slugFromHeadline(headline: string): string {
-  const hyphenated = trimHyphens(
-    headline.toUpperCase().replace(/[^A-Z0-9]+/g, "-"),
-  );
-  const slug = trimHyphens(hyphenated.slice(0, MAX_SLUG_LENGTH));
-  return slug === "" ? "NEWS" : slug;
+  const words = headlineWords(headline);
+  if (words.length === 0) return "NEWS";
+  const first = words[0];
+  if (first.length > MAX_SLUG_LENGTH) return first.slice(0, MAX_SLUG_LENGTH);
+  let slug = first;
+  for (const word of words.slice(1)) {
+    if (slug.length + 1 + word.length > MAX_SLUG_LENGTH) break;
+    slug += "-" + word;
+  }
+  return slug;
 }
 
 /** Dateline in the form `CITY, Mon. D (WireRoom) --`, using the UTC date of `nowMs`. */
