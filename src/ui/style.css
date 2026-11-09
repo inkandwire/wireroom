@@ -96,13 +96,13 @@ h2 {
   display: contents;
 }
 
-/* Heading row: the heading and the two example buttons side by side, then a
-   one-line hint under them. */
+/* Heading row: the heading and a short one-line note side by side, then the
+   two small example buttons under them. */
 .compose-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2) var(--space-3);
+  gap: var(--space-1) var(--space-3);
   margin-bottom: var(--space-3);
 }
 
@@ -110,15 +110,17 @@ h2 {
   margin: 0;
 }
 
-.compose-examples {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+.compose-head > .hint {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
 }
 
-.compose-head > .hint {
+.compose-examples {
+  display: flex;
   flex: 1 1 100%;
-  margin: 0;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 /* The form is a size container: claim rows pick their layout from the width
@@ -133,8 +135,24 @@ h2 {
   margin-bottom: var(--space-4);
 }
 
+/* Desktop shell (900px and up): exactly the viewport tall. The nameplate stays
+   at the top, the two columns fill the rest, and the page itself never
+   scrolls. The claims list and the paper scroll inside their own boxes, so
+   rows or a long item never grow the page. Phone keeps normal page scroll. */
 @media (min-width: 900px) {
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
   .nameplate {
+    flex: 0 0 auto;
     grid-template-columns: auto minmax(0, 1fr) var(--tools-width);
     grid-template-areas: "plate tagline tools";
     gap: var(--space-4);
@@ -146,30 +164,65 @@ h2 {
   }
 
   .app {
+    flex: 1 1 auto;
+    min-height: 0;
     grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     gap: var(--space-6);
-    padding: var(--space-4) var(--space-5);
-    align-items: start;
+    padding: var(--space-3) var(--space-5);
+    align-items: stretch;
+    overflow: hidden;
   }
 
   .compose {
     display: flex;
     flex-direction: column;
+    min-height: 0;
   }
 
   .compose-head {
-    order: -2;
+    flex: 0 0 auto;
     margin-bottom: var(--space-2);
   }
 
-  /* Printer column: sticky and as tall as the space under the nameplate. The
-     paper scrolls inside it, so a long item never changes the page height. */
-  .printer {
-    position: sticky;
-    top: var(--space-4);
+  /* The form takes the height left under the heading row. Its fields keep
+     their natural height; only the claims fieldset gives up space. */
+  #compose-form {
     display: flex;
     flex-direction: column;
-    height: calc(100dvh - var(--chrome-h));
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-bottom: 0;
+  }
+
+  #compose-form > * {
+    flex: 0 0 auto;
+  }
+
+  #compose-form > .claims {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #compose-form > .claims > * {
+    flex: 0 0 auto;
+  }
+
+  #compose-form > .claims > #claims {
+    flex: 1 1 0;
+    min-height: var(--claims-min-h);
+    overflow-y: auto;
+  }
+
+  /* Printer column: fills the column. The paper scrolls inside it. */
+  .printer {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
     margin-bottom: 0;
   }
 
@@ -200,6 +253,23 @@ h2 {
     flex: 1 1 auto;
     min-height: 0;
     max-height: none;
+    overflow: auto;
+  }
+}
+
+/* Short desktop windows: the one-line hints are folded away visually (they
+   stay in the page for screen readers, and aria-describedby still works) so
+   the claims list does not have to give up more than its spare height. */
+@media (min-width: 900px) and (max-height: 800px) {
+  #compose-form .hint {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 
@@ -268,11 +338,9 @@ textarea {
   border-radius: var(--radius-control);
 }
 
-/* Body textarea. The cause of the clipped first line: the shared input rule
-   gave it a min-height that is not a whole number of lines, so the content
-   box did not match the line height. Fix: paper mono font, line height of
-   exactly 1.5 (24px at 16px), vertical padding, and a height of five whole
-   lines plus padding and borders. The shared min-height is reset here. */
+/* Body textarea: exactly five lines. Paper mono font, line height of exactly
+   1.5 (24px at 16px), vertical padding, and a height of five whole lines plus
+   padding and borders. The shared min-height is reset here. */
 textarea {
   font-family: var(--font-paper);
   line-height: 1.5;
@@ -282,7 +350,7 @@ textarea {
     5 * 1.5em + 2 * var(--space-2) + 2 * var(--border-control)
   );
   scroll-padding-block: var(--space-2);
-  resize: vertical;
+  resize: none;
 }
 
 /* Priority: the native select, styled like the text inputs. The arrow is a
@@ -351,6 +419,7 @@ textarea {
 
 /* The two example buttons are small secondary buttons. */
 .compose-examples > .btn {
+  flex: 1 1 auto;
   padding: var(--space-1) var(--space-2);
   font-size: 14px;
   line-height: 1.25;
@@ -423,7 +492,8 @@ textarea {
   }
 }
 
-/* Action bar: bottom of the viewport on phone, top of the compose column on desktop.
+/* Action row: a bar stuck to the bottom of the viewport on phone. On desktop
+   it is the last row of the form column, under the embargo fields.
    --edge on --desk is 4.74:1 (3:1 needed for the boundary). */
 
 .actions {
@@ -451,24 +521,26 @@ textarea {
 /* Narrow phones: example buttons stack, one per row, labels on one line. */
 @media (max-width: 479px) {
   .compose-examples {
-    flex: 1 1 100%;
     flex-direction: column;
   }
 }
 
 /* Compact form from 900px: shorter controls (still above the 24px minimum hit
-   area), tighter gaps, and the claims list scrolls inside its own region so
-   adding rows never grows the page. */
+   area) and tighter gaps. Print is a plain row at the bottom of the form
+   column, at most --print-h-max tall. */
 @media (min-width: 900px) {
   .actions {
-    top: 0;
-    bottom: auto;
-    order: -1;
-    margin-inline: 0;
-    margin-bottom: var(--space-2);
-    padding: 0 0 var(--space-2);
+    position: static;
+    flex: 0 0 auto;
+    order: 0;
+    margin: var(--space-1) 0 0;
+    padding: 0;
+    background: transparent;
     border-top: 0;
-    border-bottom: var(--border-control) solid var(--edge);
+  }
+
+  .actions-main > .btn {
+    max-height: var(--print-h-max);
   }
 
   .btn {
@@ -492,20 +564,14 @@ textarea {
     margin-bottom: var(--space-1);
   }
 
-  #compose-form {
-    margin-bottom: 0;
-  }
-
   fieldset {
     margin-bottom: var(--space-2);
     padding: var(--space-1) var(--space-3) 0;
   }
 
   #claims {
-    max-height: calc(var(--claim-rows-visible) * var(--claim-row-h));
     margin: 0 calc(-1 * var(--space-1)) var(--space-2);
     padding: var(--space-1);
-    overflow-y: auto;
   }
 
   fieldset > .btn {
