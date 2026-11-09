@@ -6,7 +6,87 @@
     <title>WireRoom</title>
   </head>
   <body>
-    <div id="app"></div>
+    <main class="app">
+      <h1>WireRoom</h1>
+
+      <section class="compose" aria-labelledby="compose-title">
+        <h2 id="compose-title">Compose</h2>
+        <form id="compose-form" novalidate>
+          <div class="field">
+            <label for="city">Dateline city</label>
+            <input id="city" name="city" type="text" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="headline">Headline</label>
+            <input id="headline" name="headline" type="text" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="body">Body</label>
+            <textarea id="body" name="body" rows="8" aria-describedby="body-hint"></textarea>
+            <p class="hint" id="body-hint">Separate paragraphs with a blank line.</p>
+          </div>
+          <div class="field">
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority">
+              <option value="FLASH">FLASH</option>
+              <option value="BULLETIN">BULLETIN</option>
+              <option value="URGENT">URGENT</option>
+              <option value="ROUTINE" selected>ROUTINE</option>
+            </select>
+          </div>
+
+          <fieldset class="claims">
+            <legend>Claims</legend>
+            <p class="hint" id="claims-hint">
+              Every factual claim needs a source URL before release.
+            </p>
+            <div id="claims" aria-describedby="claims-hint"></div>
+            <button type="button" id="add-claim" class="btn">Add claim</button>
+          </fieldset>
+
+          <fieldset class="embargo">
+            <legend>Embargo (optional)</legend>
+            <p class="hint" id="embargo-hint">
+              Time is UTC. Leave the date empty to release now.
+            </p>
+            <div class="field">
+              <label for="embargo-date">Embargo date (UTC)</label>
+              <input id="embargo-date" name="embargoDate" type="date" aria-describedby="embargo-hint" />
+            </div>
+            <div class="field">
+              <label for="embargo-time">Embargo time (UTC)</label>
+              <input id="embargo-time" name="embargoTime" type="time" aria-describedby="embargo-hint" />
+            </div>
+          </fieldset>
+
+          <button type="submit" id="print" class="btn btn--primary">Print</button>
+        </form>
+
+        <div class="examples">
+          <button type="button" id="example-sourced" class="btn">Example: all claims sourced</button>
+          <button type="button" id="example-unsourced" class="btn">Example: one claim unsourced</button>
+          <p class="hint">
+            Sample data about Ledgerly, a made-up company. All links use example.com.
+          </p>
+        </div>
+      </section>
+
+      <section class="printer" aria-labelledby="printer-title">
+        <h2 id="printer-title">Printer</h2>
+        <div class="controls">
+          <button type="button" id="print-instantly" class="btn" hidden>Print instantly</button>
+        </div>
+        <div id="notice" class="notice" role="alert" tabindex="-1"></div>
+        <div id="paper" class="paper" aria-live="off" aria-label="Printed wire items" tabindex="0">
+          <div id="empty" class="empty">
+            <p>Nothing printed yet.</p>
+            <p>Fill in the form and press Print, or try an example.</p>
+          </div>
+        </div>
+      </section>
+
+      <div id="status" class="visually-hidden" role="status" aria-live="polite"></div>
+    </main>
     <script type="module" src="./src/ui/main.ts"></script>
   </body>
 </html>

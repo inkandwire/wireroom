@@ -1,0 +1,33 @@
+:root {
+  --paper: #efe6cc;
+  --ink: #1b1915;
+  --desk: #38433d;
+  --accent: #e3b04b;
+  --stamp: #a82a1e;
+  --muted: #5b5444;
+  --desk-muted: #bfc8bf;
+  --field: #f8f3e3;
+  --edge: #b9b08f;
+
+  --font-paper: "Courier New", Courier, "Liberation Mono", "DejaVu Sans Mono",
+    ui-monospace, monospace;
+  --font-ui: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --radius-paper: 1px;
+  --radius-control: 6px;
+  --radius-stamp: 3px;
+
+  --border-control: 2px;
+  --border-stamp: 3px;
+
+  --tap: 44px;
+  --duration-fast: 120ms;
+}
