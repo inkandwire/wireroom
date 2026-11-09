@@ -29,7 +29,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
   - Include example tests for `parseInstant`: valid with and without milliseconds; rejects missing `Z`, a non-UTC offset, month 13, Feb 30, and an empty string.
   - Requirements: 1.5, 3.1 to 3.4, 7.3.
 
-- [ ] 5. Wire item composer (`src/core/compose.ts` and `src/core/index.ts`)
+- [x] 5. Wire item composer (`src/core/compose.ts` and `src/core/index.ts`)
   - Implement `slugFromHeadline`, `formatDateline`, and `composeWireItem` (time parse, then gate, then embargo, then format) as in design.md. Return `REJECTED`, `HELD` (with `releaseAt`) or `RELEASED` (with a `WireItem`); wire text exists only on `RELEASED`.
   - Create `src/core/index.ts` with named re-exports of the public API and types from `types`, `wrap`, `claimGate`, `embargo`, `compose`.
   - Write `src/core/compose.test.ts`: example tests for the dateline (`AUSTIN, Mar. 4 (WireRoom) --`, a single-digit day, a December date) and the slug (punctuation removed, 24-character cap with no trailing hyphen, empty headline gives `NEWS`); a determinism test (same draft and same `now` give identical results, checked with fast-check); a property that every `RELEASED` item ends with `-30-` and has no line over 69 columns; a property that a draft with an unsourced claim is never `RELEASED`; a test that an embargo in the future gives `HELD` with no text, and equal to `now` gives `RELEASED`.
