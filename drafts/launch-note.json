@@ -1,0 +1,12 @@
+{
+  "headline": "Acme launches Beacon, a status page for small teams",
+  "claims": [
+    {
+      "text": "Beacon is available today for all plans.",
+      "sourceUrl": "https://example.com/acme/beacon-launch"
+    },
+    {
+      "text": "More than 500 teams joined the beta."
+    }
+  ]
+}
