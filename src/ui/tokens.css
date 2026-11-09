@@ -215,6 +215,13 @@
   --print-h-max: 48px;
   --short-viewport: 800px;
 
+  /* Paper tray and rivets (design-pass-2, task 1). Decorative only, no text
+     sits on them. The tray height is a target; it shrinks to its minimum
+     before the paper roll gives up space. */
+  --tray-h: 72px;
+  --tray-min-h: 40px;
+  --rivet-size: var(--space-2);
+
   /* Keys (task 4): the keycap bottom edge and the press travel. */
   --key-edge: 2px;
   --key-edge-print: 3px;

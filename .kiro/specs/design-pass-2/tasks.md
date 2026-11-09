@@ -4,7 +4,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
 
 Rules for every task: add no dependency, no web font, no image file; no `transition: all`; honour `prefers-reduced-motion`; use tokens, not raw hex (the only exception is the SVG data URI, with a comment); keep every existing element id and the `src/ui/printer.ts` tests passing; do not change `src/core`; follow `.kiro/steering/design.md` and `tech.md`. At 1440x900 the page must not scroll in the empty, printed and held states, and at 390x844 it must not scroll sideways.
 
-- [ ] 1. Paper tray, stacked feed and four rivets (fixes 1 and 7)
+- [x] 1. Paper tray, stacked feed and four rivets (fixes 1 and 7)
   - Files: `index.html` (`.paper-tray`, four `.rivet` elements), `src/ui/printer.css` (tray, folded-paper pile, rivets; remove the two rivet pseudo-elements), `src/ui/tokens.css` (tray tokens if needed).
   - Requirements: 1.1 to 1.3, 7.1, 9.1 to 9.3.
   - Maintainer checks: DOM: `.paper-tray` exists with `aria-hidden="true"`, `document.querySelectorAll('.rivet').length === 4`, each rivet is inside the housing rectangle near a different corner, `scrollHeight <= innerHeight` at 1440x900. Screenshot: empty printer shows the tray and not a bare dark block; with one short printed item the area below it shows paper folded into the tray; two printed items are stacked in order; four brass rivets are visible; 390x844 intact.

@@ -118,16 +118,14 @@
     inset 0 -3px 0 var(--desk-dark);
 }
 
-/* Two brass rivets at the bottom corners of the housing. Decoration only:
-   radial-gradient circles drawn on pseudo-elements, no text, no layout
-   effect (absolutely positioned inside the bottom padding). */
-.printer-body::before,
-.printer-body::after {
-  content: "";
+/* Four brass rivets, one near each corner of the housing. Decoration only:
+   aria-hidden <i> elements with a radial-gradient, no text, absolutely
+   positioned so they take no layout space. */
+.rivet {
   position: absolute;
-  bottom: var(--space-1);
-  width: var(--space-2);
-  height: var(--space-2);
+  z-index: 2;
+  width: var(--rivet-size);
+  height: var(--rivet-size);
   border-radius: 50%;
   background: radial-gradient(
     circle at 35% 35%,
@@ -137,12 +135,24 @@
   pointer-events: none;
 }
 
-.printer-body::before {
+.rivet--tl {
+  top: var(--space-1);
   left: var(--space-1);
 }
 
-.printer-body::after {
+.rivet--tr {
+  top: var(--space-1);
   right: var(--space-1);
+}
+
+.rivet--bl {
+  bottom: var(--space-1);
+  left: var(--space-1);
+}
+
+.rivet--br {
+  right: var(--space-1);
+  bottom: var(--space-1);
 }
 
 /* The bar spans the housing width: plate on the left, tools on the right. */
@@ -176,7 +186,7 @@
   flex: 0 0 auto;
 }
 
-/* Paper-catch tray: the area under and beside the paper is a dark recessed
+/* Paper-catch floor: the area under and beside the paper is a dark recessed
    floor with an inner shadow along its top edge, so the paper looks like it
    hangs into the machine. Decoration only, no padding or border, so the
    layout metrics do not change. */
@@ -185,6 +195,58 @@
   border-radius: var(--radius-control);
   box-shadow: inset 0 var(--space-3) var(--space-2) calc(-1 * var(--space-1))
     var(--shadow-ink);
+}
+
+/* Paper tray: the last child of the housing, under the paper roll. A dark
+   floor with a front lip (--edge top border, inner shadow) and a pile of
+   folded paper: horizontal fold lines (--paper with thin --muted rules) under
+   a zigzag top edge, plus faint vertical creases. CSS only, no images. It
+   shrinks to its minimum height before the paper roll gives up space, so the
+   page does not scroll. Decoration, aria-hidden in the markup. */
+.paper-tray {
+  position: relative;
+  flex: 0 1 var(--tray-h);
+  min-height: var(--tray-min-h);
+  margin-top: var(--space-1);
+  overflow: hidden;
+  background: var(--desk-dark);
+  border-top: var(--border-control) solid var(--edge);
+  border-radius: var(--radius-control);
+  box-shadow: inset 0 var(--space-2) var(--space-2) calc(-1 * var(--space-1))
+    var(--shadow-ink);
+  pointer-events: none;
+}
+
+.paper-tray::before {
+  content: "";
+  position: absolute;
+  inset: var(--space-1) var(--space-3) 0;
+  background:
+    repeating-linear-gradient(
+      to right,
+      transparent 0 calc(25% - 1px),
+      var(--shadow-ink) calc(25% - 1px) 25%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--paper) 0 5px,
+      var(--muted) 5px 6px
+    );
+  clip-path: polygon(
+    0 var(--space-1),
+    10% 0,
+    20% var(--space-1),
+    30% 0,
+    40% var(--space-1),
+    50% 0,
+    60% var(--space-1),
+    70% 0,
+    80% var(--space-1),
+    90% 0,
+    100% var(--space-1),
+    100% 100%,
+    0 100%
+  );
 }
 
 /* Platen: a CSS cylinder with brass end caps and a slot line. It sits above
