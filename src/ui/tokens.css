@@ -174,4 +174,16 @@
   /* Reserved width of the nameplate's right-hand slot (mute toggle and BELL
      label, added by a later task). Fixed so filling it does not shift layout. */
   --tools-width: 176px;
+
+  /* Layout (task 2). Estimates; the maintainer measures and adjusts.
+     --control-h-compact: control height from 900px width up (above the 24px
+     minimum hit area). --claim-row-h: height of one stacked claim row.
+     --nameplate-h: desktop nameplate height. --chrome-h: nameplate plus the
+     page padding above and below the columns, used to size the sticky
+     printer column to the viewport. */
+  --control-h-compact: 34px;
+  --claim-row-h: 150px;
+  --claim-rows-visible: 3;
+  --nameplate-h: 56px;
+  --chrome-h: calc(var(--nameplate-h) + 2 * var(--space-4));
 }

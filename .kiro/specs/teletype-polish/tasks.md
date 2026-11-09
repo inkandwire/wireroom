@@ -12,7 +12,7 @@ Rules for every task: add no dependency, no web font, no image; use CSS gradient
   - Requirements: 1.1 to 1.4, 2.1 to 2.4, 3.1 to 3.3.
   - Maintainer checks: `npm test` and `npm run build` pass; screenshots at 1440x900 and 390x844 show the first body line in full (also after scrolling the textarea to the top); a printed example shows each URL on its own line, indented 3 spaces.
 
-- [ ] 2. Layout rebalance (fix 2)
+- [x] 2. Layout rebalance (fix 2)
   - Files: `index.html` (`.compose-head` row with heading and example buttons, shorter hints), `src/ui/style.css`, `src/ui/tokens.css` (layout tokens).
   - Compact form from 900px: pairs on one row, examples next to the heading, claim row with Remove on its first line, `#claims` with `max-height` and in-form scroll, sticky full-height printer column whose paper scrolls inside it. Phone stays one column.
   - Requirements: 4.1 to 4.4, 5.1 to 5.3.
