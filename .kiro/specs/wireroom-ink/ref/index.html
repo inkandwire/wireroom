@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WireRoom</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="badge">WIREROOM</div>
+  <p class="tag">Launch wire. Every claim sourced.</p>
+</header>
+<main class="split">
+  <section class="compose" aria-labelledby="c-h">
+    <h2 id="c-h">COMPOSE</h2>
+    <form onsubmit="return false">
+      <div class="row">
+        <label class="f city">Dateline city<input value="Austin"></label>
+        <label class="f">Priority
+          <select><option>BULLETIN</option><option>FLASH</option><option>ROUTINE</option></select></label>
+      </div>
+      <label class="f">Headline<input value="Ledgerly opens public"></label>
+      <label class="f">Body<textarea rows="3">Ledgerly opens to the public today. Invoices, ledgers and exports are live for every account.</textarea></label>
+      <fieldset class="f">
+        <legend>Claims and sources</legend>
+        <input aria-label="Claim 1" value="Public sign-up is open to all accounts">
+        <input aria-label="Source URL 1" value="https://ledgerly.example/changelog">
+        <input aria-label="Claim 2" value="Exports ship as CSV and JSON">
+        <input aria-label="Source URL 2" value="https://ledgerly.example/docs/export">
+      </fieldset>
+      <div class="row">
+        <label class="f">Embargo date<input value="2026-11-09"></label>
+        <label class="f">Embargo time (UTC)<input value="18:34"></label>
+      </div>
+      <button class="key primary" type="button">Print</button>
+    </form>
+  </section>
+
+  <section class="printer" aria-label="Printer">
+    <div class="keyrow">
+      <button class="flat" type="button">Muted</button>
+      <button class="flat" type="button">Export RSS</button>
+      <button class="flat" type="button">Export JSON feed</button>
+    </div>
+    <div class="housing">
+      <i class="rv tl"></i><i class="rv tr"></i><i class="rv bl"></i><i class="rv br"></i>
+      <div class="platen"><b class="cap l"></b><b class="cap r"></b></div>
+    </div>
+    <div class="roll">
+      <article class="sheet held">
+        <div class="stamp">HOLD UNTIL 2026-11-09 18:34 UTC</div>
+        <p class="slug">LEDGERLY-OPENS-PUBLIC <span class="pri">BULLETIN</span></p>
+        <p class="withheld">TEXT WITHHELD UNTIL RELEASE.</p>
+        <div class="clock" role="timer" aria-label="Time until release"><span class="lbl">HOLD UNTIL 2026-11-09 18:34 UTC</span><span class="digits">T-03:00:00</span></div>
+        <div class="btns">
+          <button class="key" type="button">Release now</button>
+          <button class="key" type="button">Cancel embargo</button>
+        </div>
+      </article>
+      <article class="sheet printed">
+        <p class="slug">LEDGERLY-OPENS-PUBLIC <span class="pri">BULLETIN</span></p>
+        <p class="copy">AUSTIN, Nov. 9 (WireRoom) -- Ledgerly opens to the public today. Invoices, ledgers and exports are live for every account.</p>
+        <p class="src">Sources:</p>
+        <ol class="srcs"><li>https://ledgerly.example/changelog</li><li>https://ledgerly.example/docs/export</li></ol>
+        <p class="end">-30-</p>
+      </article>
+      <div class="tray"></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
