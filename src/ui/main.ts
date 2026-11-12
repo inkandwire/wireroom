@@ -1,6 +1,7 @@
 import "./tokens.css";
 import "./style.css";
 import "./printer.css";
+import "./fit.css";
 import {
   composeWireItem,
   countdown,

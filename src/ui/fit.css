@@ -1,0 +1,241 @@
+/* Fit fixes for narrow windows. Tokens only. Loaded after printer.css, so
+   these rules win at equal specificity. Everything is inside one query:
+   at 861px and above nothing here applies and the desktop look is unchanged.
+
+   1. Layout: the two-column shell (style.css and printer.css, from 800px)
+      only stays for 861px and up. At 860px and below the phone layout is
+      restored: one column, normal page scroll, the paper scrolls in its box.
+   2. The printed sheet fits the paper window, so the HOLD stamp, the ticker
+      and both sprocket strips stay in view and the paper has no sideways
+      scroll. */
+
+@media (max-width: 860px) {
+  /* ---- One column: undo the 800px shell ------------------------------- */
+
+  body {
+    display: block;
+    height: auto;
+  }
+
+  .nameplate {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "plate"
+      "tagline";
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-3) var(--space-2);
+  }
+
+  .nameplate-tagline {
+    justify-self: auto;
+    text-align: left;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    gap: 0;
+    height: auto;
+    min-height: 0;
+    padding: var(--space-4) var(--space-2) 0;
+    align-items: normal;
+    overflow: visible;
+  }
+
+  .compose {
+    display: contents;
+  }
+
+  .compose-head {
+    margin-bottom: var(--space-3);
+  }
+
+  .compose-examples {
+    flex: 1 1 100%;
+  }
+
+  #compose-form {
+    display: block;
+    min-height: 0;
+    margin-bottom: var(--space-3);
+  }
+
+  #compose-form > .form-fields {
+    display: block;
+    min-height: 0;
+  }
+
+  .form-fields > .claims {
+    display: block;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .form-fields > .claims > #claims {
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow-y: visible;
+  }
+
+  fieldset.embargo > legend {
+    float: none;
+    padding: 0 var(--space-1);
+    line-height: 1.25;
+  }
+
+  fieldset.embargo > .field-pair {
+    overflow: visible;
+  }
+
+  fieldset.embargo .field {
+    margin-bottom: var(--space-3);
+  }
+
+  /* Compact form rules from 800px, back to the phone sizes. */
+  input,
+  select {
+    min-height: var(--tap);
+    padding-block: var(--space-2);
+    line-height: 1.5;
+  }
+
+  #compose-form .field {
+    margin-bottom: var(--space-3);
+  }
+
+  #compose-form .hint {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 0 var(--space-2);
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+
+  fieldset {
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-3) var(--space-1);
+  }
+
+  fieldset > .btn {
+    margin-bottom: var(--space-2);
+  }
+
+  .claim-row > .claim-remove {
+    min-height: var(--tap);
+    padding-block: var(--space-2);
+    line-height: 1.5;
+  }
+
+  .actions {
+    position: sticky;
+    bottom: 0;
+    order: 1;
+    margin: 0 calc(-1 * var(--space-2));
+    padding: var(--space-2);
+    background: var(--desk);
+    border-top: var(--border-control) solid var(--edge);
+  }
+
+  .actions-main > .btn {
+    max-height: none;
+  }
+
+  /* Form fields stay inside the column, the embargo date and time included. */
+  input,
+  select,
+  textarea,
+  input[type="date"],
+  input[type="time"] {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .field,
+  .field-pair,
+  .field-pair > .field,
+  fieldset {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Printer column. */
+  .printer {
+    display: block;
+    height: auto;
+    min-height: 0;
+    margin-bottom: var(--space-4);
+  }
+
+  .printer-body {
+    flex: none;
+    width: auto;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .paper-stage,
+  .paper-wrap {
+    display: block;
+    flex: none;
+    min-height: 0;
+  }
+
+  .paper {
+    flex: none;
+    min-height: 0;
+    max-height: var(--paper-max-height);
+    overflow: auto;
+  }
+
+  .hold-warning {
+    font-size: 16px;
+  }
+
+  /* ---- The sheet fits the paper window -------------------------------- */
+
+  /* The side padding (--paper-pad-x) is kept, so both sprocket strips
+     (::before and ::after) stay inside the sheet. Long lines wrap for
+     display; the wire text itself is unchanged. */
+  .item {
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .item-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* Countdown: every digit of T-HH:MM:SS shows. The row may wrap. */
+  .ticker {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ticker-digits {
+    font-size: clamp(18px, 6vw, 32px);
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+
+  /* HOLD stamp: wraps inside the sheet. The margins clear the swing of the
+     rotated box; its corners stay inside the sheet side padding. The double
+     border stays closed on all four sides. */
+  .stamp {
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: var(--space-6) 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: clamp(16px, 5vw, 1.6em);
+  }
+}
