@@ -1,0 +1,46 @@
+/* Demo row (Compose header): its own full-width line under the heading and the
+   example buttons. Keys keep the 44px height of .btn. Colours are tokens:
+   --cream on --panel 12.18:1 (label), --key-ink on --brass 5.60:1 (keys). */
+.compose-demo {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.compose-demo-label {
+  color: var(--cream);
+  font-family: var(--font-paper);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.compose-demo > .btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--space-1) var(--space-2);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+/* Really disabled while a story is held or printing: the inert dashed look
+   used by the other inert keys (--desk-muted on --panel 9.72:1). */
+.compose-demo > .btn:disabled {
+  color: var(--desk-muted);
+  background: transparent;
+  border-color: var(--edge);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Phone: the two keys stack, one per row. */
+@media (max-width: 479px) {
+  .compose-demo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

@@ -19,7 +19,7 @@ Rules for every task: add no dependency, no web font, no image file; no `transit
   - fast-check properties: valid https URLs on dotted hosts are `OK`; http and other schemes are `NOT_HTTPS`; junk (spaces, padding, no dot) is `MALFORMED`; results keep claim order and count; same input gives same output; the module source has no `fetch`, `XMLHttpRequest` or network import.
   - Maintainer checks: `npm test`; `npm run sourcecheck` prints one status line per claim and exits 1 on any non-`OK` claim; `drafts/launch-note.json` output read; hook command output unchanged in form.
 
-- [ ] 3. Demo buttons
+- [x] 3. Demo buttons
   - Files: `src/ui/demo.ts`, `src/ui/demo.test.ts`, `index.html` (Demo row), `src/ui/style.css` (row layout), `src/ui/main.ts` (thin wiring).
   - Requirements: R13, R14.
   - Tests: `embargoInstant(now)` is a whole UTC minute and 45 to 105s ahead for any `now` (fast-check); the unsourced fill has exactly one claim without a URL; the sourced fill has every claim on `example.com` and a date and time that parse to `embargoInstant(now)`.

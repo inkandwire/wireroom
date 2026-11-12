@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WireRoom</title>
+    <link rel="stylesheet" href="./src/ui/demo.css" />
   </head>
   <body>
     <header class="nameplate">
@@ -19,6 +20,11 @@
           <div class="compose-examples">
             <button type="button" id="example-sourced" class="btn" aria-describedby="examples-hint">Example: all claims sourced</button>
             <button type="button" id="example-unsourced" class="btn" aria-describedby="examples-hint">Example: one claim unsourced</button>
+          </div>
+          <div class="compose-demo" role="group" aria-label="Demo">
+            <span class="compose-demo-label" aria-hidden="true">Demo</span>
+            <button type="button" id="demo-unsourced" class="btn">Try: launch with an unsourced claim</button>
+            <button type="button" id="demo-sourced" class="btn">Try: launch fully sourced</button>
           </div>
         </div>
 

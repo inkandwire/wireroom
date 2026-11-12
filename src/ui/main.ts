@@ -10,6 +10,7 @@ import {
   type ReleasedOne,
 } from "../core/index";
 import { createClockLoop, type ClockRow } from "./clockLoop";
+import { buildSourcedDemo, buildUnsourcedDemo, type DemoFill } from "./demo";
 import { buildExport, type ExportKind } from "./exportFeed";
 import {
   EXAMPLE_SOURCED,
@@ -56,6 +57,8 @@ const printEl = byId<HTMLButtonElement>("print");
 const printInstantlyEl = byId<HTMLButtonElement>("print-instantly");
 const exampleSourcedEl = byId<HTMLButtonElement>("example-sourced");
 const exampleUnsourcedEl = byId<HTMLButtonElement>("example-unsourced");
+const demoUnsourcedEl = byId<HTMLButtonElement>("demo-unsourced");
+const demoSourcedEl = byId<HTMLButtonElement>("demo-sourced");
 const composeEl = document.querySelector<HTMLElement>(".compose");
 const printerSectionEl = document.querySelector<HTMLElement>(".printer") ?? paperEl;
 
@@ -184,12 +187,15 @@ function setAriaDisabled(el: HTMLElement, on: boolean): void {
 // Print and the examples are inert while the printer is busy or a story is
 // held. Print instantly is inert only while held and not printing: during the
 // print of the held proof itself it must stay usable to skip ahead.
+// The two Demo buttons are really `disabled` in the same states.
 function syncInert(): void {
   const busy = printer.isBusy();
   const locked = isLocked();
   setAriaDisabled(printEl, busy || locked);
   setAriaDisabled(exampleSourcedEl, busy || locked);
   setAriaDisabled(exampleUnsourcedEl, busy || locked);
+  demoUnsourcedEl.disabled = busy || locked;
+  demoSourcedEl.disabled = busy || locked;
   setAriaDisabled(printInstantlyEl, locked && !busy);
 }
 
@@ -563,6 +569,18 @@ form.addEventListener("submit", (event) => {
     });
   }
 });
+
+// ---- Demo buttons --------------------------------------------------------
+
+// Fill the form, then submit through the same handler as Print.
+function runDemo(fill: DemoFill): void {
+  if (printer.isBusy() || isLocked()) return;
+  fillForm({ ...fill, priority: fill.priority as Priority });
+  form.requestSubmit();
+}
+
+demoUnsourcedEl.addEventListener("click", () => runDemo(buildUnsourcedDemo()));
+demoSourcedEl.addEventListener("click", () => runDemo(buildSourcedDemo(Date.now()))); // UI reads the clock
 
 addRow();
 applyLock();
