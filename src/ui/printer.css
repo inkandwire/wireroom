@@ -1,16 +1,18 @@
-/* Printer controls and states (task 4). Tokens only.
+/* Printer controls and states. Tokens only.
    Loaded after style.css, so these rules win at equal specificity. */
 
 /* Mute toggle and BELL label (printer bar).
    --ink on --paper 14.09:1 for the lit BELL label. The label keeps its place
    while hidden (visibility, not display), so nothing shifts. */
 
-/* The toggle is one of the three feed keys (.btn.feed-key in style.css):
-   --key fill, --paper text 5.65:1, 2px bottom edge, press, 44px high. Sizing
-   lives in style.css. Only the "Sound on" state is set here: a brass border
-   and bold text, so the state is not colour alone. */
+/* The toggle is one of the three feed keys (.btn.feed-key in style.css): a
+   brass key, --key-ink text 5.60:1, 44px high. Sizing lives in style.css. Only
+   the "Sound on" state is set here: bold text and a second, inner --key-ink
+   ring, so the state is not colour alone. */
 .mute-toggle[aria-pressed="false"] {
-  border-color: var(--accent);
+  box-shadow:
+    inset 0 0 0 var(--border-control) var(--key-ink),
+    inset 0 var(--space-1) 0 var(--brass-hi);
   font-weight: bold;
 }
 
@@ -38,13 +40,15 @@
 }
 
 /* Inert while an item prints, and for an export key with nothing to export.
-   The dashed edge means it is not colour alone. The border width stays 2px, so
-   an inert key is the same height as a live one.
-   --desk-muted on --desk 6.00:1. */
+   The dashed edge means it is not colour alone. The border widths stay the
+   same as a live key (2px, 5px at the bottom), so an inert key is the same
+   height as a live one. --desk-muted on --desk-dark 8.46:1, --edge on
+   --desk-dark 7.0:1 or more. */
 .btn[aria-disabled="true"],
 .btn[aria-disabled="true"]:hover {
   color: var(--desk-muted);
   background: transparent;
+  border-color: var(--edge);
   border-style: dashed;
   box-shadow: none;
   font-weight: normal;
@@ -52,7 +56,7 @@
 }
 
 /* Printed item states. A cut item is its own sheet: a dashed perforation
-   directly under the last line (--muted on --paper 6.03:1, 3:1 needed), then a
+   directly under the last line (--muted on --sheet 6.26:1, 3:1 needed), then a
    torn bottom edge. The space before the next sheet is the margin on
    `.item + .item` in style.css. The shift is a single 3px nudge for 120ms.
    Reduced motion never gets the shift class, and the media query also removes
@@ -85,57 +89,65 @@
   }
 }
 
-/* Printer housing, bar and platen (task 3). Tokens only. */
+/* Printer housing, bar and platen. Tokens only.
 
+   The housing is a raised steel panel: a --steel to --steel-lo gradient, a
+   --steel-hi highlight along the top edge, a --well border. The side padding
+   (--housing-pad-x, 24px) and the top padding (24px) keep the four rivets
+   (12px, 8px from each corner, so they cover 8px to 20px) clear of the bar,
+   the platen and its caps. */
 .printer-body {
   position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: var(--space-2) var(--space-3) var(--space-3);
-  background: var(--desk);
-  border: var(--border-control) solid var(--edge);
+  padding: var(--space-5) var(--housing-pad-x) var(--space-3);
+  background: linear-gradient(var(--steel), var(--steel-lo));
+  border: var(--border-control) solid var(--well);
   border-radius: var(--radius-housing);
   box-shadow:
-    inset 0 2px 0 var(--desk-muted),
-    inset 0 -3px 0 var(--desk-dark);
+    inset 0 2px 0 var(--steel-hi),
+    inset 0 -3px 0 var(--well);
 }
 
 /* Four brass rivets, one near each corner of the housing. Decoration only:
-   aria-hidden <i> elements with a radial-gradient, no text, absolutely
-   positioned so they take no layout space. */
+   aria-hidden <i> elements with a radial-gradient and a 1px dark shadow, no
+   text, absolutely positioned so they take no layout space. They sit above
+   the caps in z-order and never overlap them. */
 .rivet {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   width: var(--rivet-size);
   height: var(--rivet-size);
   border-radius: 50%;
   background: radial-gradient(
-    circle at 35% 35%,
-    var(--accent),
-    var(--brass-dark) 75%
+    circle at 35% 30%,
+    var(--brass-hi),
+    var(--brass) 45%,
+    var(--brass-dark)
   );
+  box-shadow: 0 1px 1px var(--well);
   pointer-events: none;
 }
 
 .rivet--tl {
-  top: var(--space-1);
-  left: var(--space-1);
+  top: var(--rivet-inset);
+  left: var(--rivet-inset);
 }
 
 .rivet--tr {
-  top: var(--space-1);
-  right: var(--space-1);
+  top: var(--rivet-inset);
+  right: var(--rivet-inset);
 }
 
 .rivet--bl {
-  bottom: var(--space-1);
-  left: var(--space-1);
+  bottom: var(--rivet-inset);
+  left: var(--rivet-inset);
 }
 
 .rivet--br {
-  right: var(--space-1);
-  bottom: var(--space-1);
+  right: var(--rivet-inset);
+  bottom: var(--rivet-inset);
 }
 
 /* The bar spans the housing width: plate and BELL label on the left, the feed
@@ -154,12 +166,14 @@
   border-radius: var(--radius-bar);
 }
 
+/* The plate: --key-ink on --brass 5.60:1. */
 .printer-bar > h2 {
   margin: 0;
   padding: var(--space-1) var(--space-3);
-  color: var(--ink);
-  background: var(--accent);
+  color: var(--key-ink);
+  background: var(--brass);
   border-radius: var(--radius-bar);
+  box-shadow: inset 0 2px 0 var(--brass-hi);
   font-family: var(--font-paper);
   line-height: 1.5;
 }
@@ -179,23 +193,24 @@
     var(--shadow-ink);
 }
 
-/* Paper tray: the last child of the housing, under the paper roll. A dark
-   floor with a front lip (--edge top border, inner shadow) and a pile of
-   folded paper: horizontal fold lines (--paper with thin --muted rules) under
-   a zigzag top edge, plus faint vertical creases. CSS only, no images. It
-   shrinks to its minimum height before the paper roll gives up space, so the
-   page does not scroll. Decoration, aria-hidden in the markup. */
+/* Paper tray: the last child of the housing, under the paper roll. A darker
+   well (--steel-lo to --well) with a lighter front lip (3px --steel-hi top
+   border) and a deep inset shadow, so the roll visibly feeds from a tray. It
+   holds a pile of folded paper: horizontal fold lines (--paper with thin
+   --muted rules) under a zigzag top edge, plus faint vertical creases. CSS
+   only, no images. It shrinks to its minimum height before the paper roll
+   gives up space, so the page does not scroll. Decoration, aria-hidden in the
+   markup. */
 .paper-tray {
   position: relative;
   flex: 0 1 var(--tray-h);
   min-height: var(--tray-min-h);
   margin-top: var(--space-1);
   overflow: hidden;
-  background: var(--desk-dark);
-  border-top: var(--border-control) solid var(--edge);
+  background: linear-gradient(var(--steel-lo), var(--well));
+  border-top: var(--border-stamp) solid var(--steel-hi);
   border-radius: var(--radius-control);
-  box-shadow: inset 0 var(--space-2) var(--space-2) calc(-1 * var(--space-1))
-    var(--shadow-ink);
+  box-shadow: inset 0 var(--space-1) var(--space-2) var(--well);
   pointer-events: none;
 }
 
@@ -231,36 +246,51 @@
   );
 }
 
-/* Platen: a CSS cylinder with brass end caps and a slot line. It sits above
-   the paper and overlaps it, so the paper is tucked under the roller. The
-   negative bottom margin pulls the paper stage up by --slot-overlap (6px), so
-   the first sheet's top edge sits under the roller's bottom edge and no desk
-   colour shows between them. */
+/* Platen: a thick CSS cylinder (--platen-h, 60px, taller than a 44px key)
+   with two brass end caps. The roller is a rounded cylinder gradient with a
+   light band near 30%. Each cap is --cap-h (40px) tall, centred on the roller
+   and drawn in front of it. The platen sits above the paper and overlaps it,
+   so the paper is tucked under the roller. The negative bottom margin pulls
+   the paper stage up by --slot-overlap (6px), so the first sheet's top edge
+   sits under the roller's bottom edge and no desk colour shows between them. */
 .platen {
   position: relative;
   z-index: 1;
   display: flex;
   flex: 0 0 auto;
+  align-items: center;
   height: var(--platen-h);
   margin-bottom: calc(-1 * var(--slot-overlap));
   pointer-events: none;
 }
 
 .platen-cap {
+  position: relative;
+  z-index: 1;
   flex: 0 0 var(--cap-w);
-  background: linear-gradient(to bottom, var(--accent), var(--brass-dark));
+  height: var(--cap-h);
+  background: radial-gradient(
+    circle at 40% 35%,
+    var(--brass-hi),
+    var(--brass) 50%,
+    var(--brass-dark)
+  );
+  border: 1px solid var(--well);
   border-radius: var(--radius-bar);
 }
 
 .platen-roll {
   flex: 1 1 auto;
+  align-self: stretch;
   background: linear-gradient(
     to bottom,
-    var(--roller-hi),
-    var(--roller-mid) 45%,
+    var(--roller-lo),
+    var(--roller-hi) 30%,
     var(--roller-lo)
   );
   border-bottom: 1px solid var(--desk-dark);
+  border-radius: var(--radius-roller);
+  box-shadow: inset 0 3px 4px var(--well);
 }
 
 /* Soft shadow cast by the roller onto the paper. */
@@ -272,9 +302,9 @@
   background: linear-gradient(to bottom, var(--shadow-ink), transparent);
 }
 
-/* Held area (design-pass-2, task 3). Tokens only, no animation, so reduced
-   motion needs nothing here. The paper item is `white-space: pre`, so the
-   held area sets `normal` and its sentences wrap inside the paper.
+/* Held area. Tokens only, no animation, so reduced motion needs nothing here.
+   The paper item is `white-space: pre`, so the held area sets `normal` and its
+   sentences wrap inside the paper.
    None of it is a live region: the status region never hears it and the paper
    is aria-live="off". */
 .hold-area {
@@ -283,9 +313,9 @@
   overflow-wrap: anywhere;
 }
 
-/* Ticker: a dark recessed strip, like a flip-clock window.
-   --accent digits on --ticker 9.48:1, --paper on --ticker 15.11:1,
-   --desk-muted on --ticker 10.96:1 (4.5:1 needed). */
+/* Ticker: a dark recessed bezel, like a flip-clock window.
+   --amber digits on --bezel 8.13:1, --paper on --bezel 14.31:1,
+   --desk-muted on --bezel 10.41:1 (4.5:1 needed). */
 .ticker {
   display: flex;
   flex-wrap: wrap;
@@ -294,9 +324,9 @@
   margin: 0;
   padding: var(--space-2) var(--space-3);
   color: var(--paper);
-  background: var(--ticker);
-  border: var(--border-control) solid var(--desk-dark);
-  border-radius: var(--radius-control);
+  background: var(--bezel);
+  border: var(--border-stamp-heavy) solid var(--well);
+  border-radius: var(--radius-bar);
   box-shadow: inset 0 var(--space-1) var(--space-2) var(--shadow-ink);
   font-family: var(--font-paper);
 }
@@ -310,15 +340,16 @@
 }
 
 /* Segmented look: wide tracking, tabular digits and a hairline seam across the
-   middle of the digits, like the split of a flip counter. Phone: 24px or more.
-   The 900px media query below raises it to 32px or more. */
+   middle of the digits, like the split of a flip counter. Amber, no glow.
+   Phone: 24px or more. The 800px media query below raises it to 32px or
+   more. The digits are the second thing on a held sheet, after the stamp. */
 .ticker-digits {
   padding: 0 var(--space-1);
-  color: var(--accent);
+  color: var(--amber);
   background: linear-gradient(
     to bottom,
     transparent calc(50% - 1px),
-    var(--desk-dark) calc(50% - 1px) calc(50% + 1px),
+    var(--well) calc(50% - 1px) calc(50% + 1px),
     transparent calc(50% + 1px)
   );
   font-size: clamp(24px, 4vw, 40px);
@@ -340,7 +371,7 @@
 
 /* Warning strip: --ink on --field 15.81:1. The mark is a generated "!" in a
    --stamp-deep square (--field on --stamp-deep 8.04:1); its alternative text is
-   empty, so it is not read. The text is 16px on a phone and 14px from 900px
+   empty, so it is not read. The text is 16px on a phone and 14px from 800px
    up. The sentence is the only text node, so its text is exact. */
 .hold-warning {
   display: flex;
@@ -370,7 +401,7 @@
   text-align: center;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 800px) {
   .ticker-digits {
     font-size: clamp(32px, 3vw, 40px);
   }
@@ -380,14 +411,16 @@
   }
 }
 
-/* HOLD stamp: --stamp-deep text and 4px border (7.16:1 on --paper), a speckle
-   of two small radial-gradient dot layers in the same ink at low alpha, still
-   rotated -3deg, text and never over wire text. The lifted stamp keeps its
-   space (opacity, not display), so the sheet does not jump. Properties are
-   listed explicitly. */
+/* HOLD stamp ink: --crimson text and a 4px double --crimson border (4.54:1
+   on --sheet; the text is large and bold, 3:1 needed), an uneven edge from the
+   double rule, a speckle of two small radial-gradient dot layers in the same
+   ink at low alpha, rotated about -10deg (style.css). It is text, in the flow
+   of the sheet, never over wire text, and it has no glow. The lifted stamp
+   keeps its space (opacity, not display), so the sheet does not jump.
+   Properties are listed explicitly. */
 .stamp {
-  color: var(--stamp-deep);
-  border: var(--border-stamp-heavy) solid var(--stamp-deep);
+  color: var(--crimson);
+  border: var(--border-stamp-heavy) double var(--crimson);
   background-image:
     radial-gradient(circle at 20% 30%, var(--stamp-speckle) 0 1px, transparent 2px),
     radial-gradient(circle at 70% 65%, var(--stamp-speckle) 0 2px, transparent 3px);
@@ -401,7 +434,7 @@
 
 .stamp--lifted {
   opacity: 0;
-  transform: rotate(-3deg) translateY(-6px);
+  transform: rotate(-10deg) translateY(-6px);
 }
 
 @media (prefers-reduced-motion: reduce) {

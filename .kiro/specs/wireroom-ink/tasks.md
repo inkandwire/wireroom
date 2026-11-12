@@ -4,7 +4,7 @@ Note: the agent running a task cannot run shell commands. Each task only writes 
 
 Rules for every task: add no dependency, no web font, no image file; no `transition: all`; honour `prefers-reduced-motion`; use tokens, not raw hex; keep every existing element id, test class and ARIA attribute; do not change `checkClaims` or its tests; do not touch `.kiro/settings`; do not edit or import `ref/`; follow `.kiro/steering/*.md`.
 
-- [ ] 1. Look port and the six gaps
+- [x] 1. Look port and the six gaps
   - Files: `index.html`, `src/ui/tokens.css`, `src/ui/style.css`, `src/ui/printer.css`, `src/ui/printer.ts` (only if markup needs it), `.kiro/steering/design.md` (token and contrast table).
   - Requirements: R1 to R9.
   - Keep all existing tests green; add one small pure test only if logic is added.
@@ -13,7 +13,7 @@ Rules for every task: add no dependency, no web font, no image file; no `transit
 
 - Operator step, not a Kiro task: the maintainer changes the `command` in `.kiro/settings/mcp.json` to plain `uvx` by hand (kiro-scope blocks writes to `.kiro/settings`). Kiro does not touch that file.
 
-- [ ] 2. Offline source checker
+- [x] 2. Offline source checker
   - Files: `src/core/sourceCheck.ts`, `src/core/sourceCheck.test.ts`, `src/core/sourceCheck.prop.test.ts`, `src/core/index.ts`, `src/cli/report.ts`, `src/cli/claimgate.ts`, `src/cli/report.test.ts`, `package.json` (script `sourcecheck`), `.kiro/steering/source-check.md` (rewrite).
   - Requirements: R10 to R12.
   - fast-check properties: valid https URLs on dotted hosts are `OK`; http and other schemes are `NOT_HTTPS`; junk (spaces, padding, no dot) is `MALFORMED`; results keep claim order and count; same input gives same output; the module source has no `fetch`, `XMLHttpRequest` or network import.

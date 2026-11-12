@@ -12,8 +12,12 @@ html {
   background: var(--desk);
 }
 
+/* The page is at least the viewport tall and never hides overflow. From 800px
+   the shell below fixes the height to the viewport and the inner regions
+   scroll instead. */
 body {
   margin: 0;
+  min-height: 100vh;
   background: var(--desk);
   color: var(--paper);
   font-family: var(--font-ui);
@@ -29,8 +33,9 @@ h2 {
   text-transform: uppercase;
 }
 
-/* Nameplate (--ink on --accent 8.84:1, --desk-muted on --desk 6.00:1).
-   A solid 2px --brass-dark rule runs under the bar across the full width. */
+/* Nameplate: a brass badge (--key-ink on --brass 5.60:1) and a tagline
+   (--desk-muted on --desk 6.59:1). A solid 2px --brass-dark rule runs under
+   the bar across the full width. */
 
 .nameplate {
   display: grid;
@@ -48,9 +53,11 @@ h2 {
   grid-area: plate;
   margin: 0;
   padding: var(--space-1) var(--space-3);
-  color: var(--ink);
-  background: var(--accent);
-  border-radius: var(--radius-control);
+  color: var(--key-ink);
+  background: var(--brass);
+  border: var(--border-control) solid var(--brass-dark);
+  border-radius: var(--radius-bar);
+  box-shadow: inset 0 2px 0 var(--brass-hi);
   font-family: var(--font-paper);
   font-size: 20px;
   font-weight: bold;
@@ -83,13 +90,11 @@ h2 {
   min-height: var(--tap);
 }
 
-/* The three feed keys share one size and one style on top of .btn (grey-green
-   keycap: --paper on --key 5.65:1, 2px --edge border 4.74:1 on --desk). The
-   selector has two classes so the 34px compact .btn height from 900px width
-   up does not shrink them: they stay 44px high at every width. The text is
-   centred and kept on one line. The dashed aria-disabled look (printer.css)
-   changes only the border style, so enabled and disabled keys keep the same
-   height. */
+/* The three feed keys share one size and one style on top of .btn (brass
+   keycap: --key-ink on --brass 5.60:1). They stay 44px high at every width.
+   The text is centred and kept on one line. The dashed aria-disabled look
+   (printer.css) changes only the border style and colour, so enabled and
+   disabled keys keep the same height. */
 .btn.feed-key {
   display: inline-flex;
   flex: 0 0 auto;
@@ -123,7 +128,8 @@ h2 {
 }
 
 /* Heading row: the heading, then the two small example buttons. The sample
-   data note is a title attribute plus visually hidden text (examples-hint). */
+   data note is a title attribute plus visually hidden text (examples-hint).
+   The heading is --brass-hi: 6.77:1 on --desk, 9.98:1 on --panel. */
 .compose-head {
   display: flex;
   flex-wrap: wrap;
@@ -134,6 +140,8 @@ h2 {
 
 .compose-head > h2 {
   margin: 0;
+  color: var(--brass-hi);
+  letter-spacing: 0.2em;
 }
 
 .compose-examples {
@@ -151,8 +159,8 @@ h2 {
 }
 
 /* #form-fields wraps every field of the form so one `disabled` locks them all
-   while a story is held (design-pass-2, task 4). It has no border, padding or
-   margin of its own: it must not change the look or the layout. */
+   while a story is held. It has no border, padding or margin of its own: it
+   must not change the look or the layout. */
 .form-fields {
   min-width: 0;
   margin: 0;
@@ -164,20 +172,17 @@ h2 {
   margin-bottom: var(--space-4);
 }
 
-/* Desktop shell (900px and up): exactly the viewport tall. The nameplate stays
-   at the top, the two columns fill the rest, and the page itself never
-   scrolls. The claims list and the paper scroll inside their own boxes, so
-   rows or a long item never grow the page. Phone keeps normal page scroll. */
-@media (min-width: 900px) {
-  html,
-  body {
-    height: 100dvh;
-    overflow: hidden;
-  }
-
+/* Desktop shell (800px and up): exactly the viewport tall. The nameplate stays
+   at the top, the two columns fill the rest, and the page itself does not
+   scroll. The claims list and the paper scroll inside their own boxes, so
+   rows or a long item never grow the page. Phone keeps normal page scroll.
+   Below 800px (768px included) the layout is one column; 820px has two. */
+@media (min-width: 800px) {
   body {
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
   }
 
   /* Title on the left, tagline at the right end of the bar. */
@@ -205,10 +210,18 @@ h2 {
     overflow: hidden;
   }
 
+  /* The compose column is a dark panel (--cream on --panel 12.18:1). */
   .compose {
     display: flex;
     flex-direction: column;
     min-height: 0;
+    padding: var(--space-4);
+    overflow-y: auto;
+    background: var(--panel);
+    border: var(--border-control) solid var(--well);
+    border-radius: var(--radius-panel);
+    scrollbar-color: var(--edge) var(--desk-dark);
+    scrollbar-width: thin;
   }
 
   .compose-head {
@@ -325,7 +338,7 @@ h2 {
   }
 }
 
-/* Wide desktop: a wider form column. Between 900px and 1099px the narrow
+/* Wide desktop: a wider form column. Between 800px and 1099px the narrow
    column stays. */
 @media (min-width: 1100px) {
   .app {
@@ -336,7 +349,7 @@ h2 {
 /* Short desktop windows: the one-line hints are folded away visually (they
    stay in the page for screen readers, and aria-describedby still works) so
    the claims list does not have to give up more than its spare height. */
-@media (min-width: 900px) and (max-height: 800px) {
+@media (min-width: 800px) and (max-height: 800px) {
   #compose-form .hint {
     position: absolute;
     width: 1px;
@@ -368,9 +381,11 @@ h2 {
   min-width: 0;
 }
 
-/* Typewriter labels: paper mono, 14px, uppercase. */
+/* Typewriter labels: paper mono, 14px, uppercase. --cream on --panel 12.18:1,
+   on --desk 8.25:1. */
 label,
 legend {
+  color: var(--cream);
   font-family: var(--font-paper);
   font-size: 14px;
   line-height: 1.25;
@@ -404,23 +419,23 @@ button {
   line-height: 1.5;
 }
 
-/* Recessed fields: a double border (the 2px --edge border plus a thin dark
-   outer line) and an inner shadow, so the field looks sunk into the desk.
-   Paper mono text, 16px. --ink on --field 15.81:1, --field on --desk 9.28:1,
-   --edge on --desk 4.74:1. color-scheme keeps native pickers light. */
+/* Fields: cream fill, --ink-field text (12.04:1) and a 2px --ink-field border,
+   with a lighter 2px outer ring (--ring, 4.55:1 on --panel, 3.09:1 on --desk)
+   so the edge reads against the panel. A soft inner shadow keeps the field
+   recessed. Paper mono text, 16px. color-scheme keeps native pickers light. */
 input,
 select,
 textarea {
   width: 100%;
   min-height: var(--tap);
   padding: var(--space-2) var(--space-3);
-  color: var(--ink);
+  color: var(--ink-field);
   color-scheme: light;
-  background: var(--field);
-  border: var(--border-control) solid var(--edge);
+  background: var(--cream);
+  border: var(--border-control) solid var(--ink-field);
   border-radius: var(--radius-control);
   box-shadow:
-    0 0 0 1px var(--desk-dark),
+    0 0 0 var(--border-control) var(--ring),
     inset 0 2px 3px var(--shadow-ink);
   font-family: var(--font-paper);
   font-size: 16px;
@@ -430,13 +445,12 @@ textarea {
    typed. It is the native caret (no animation of our own), so it cannot blink
    under prefers-reduced-motion by our doing. */
 #headline {
-  caret-color: var(--accent);
+  caret-color: var(--ink-field);
 }
 
 /* Date and time wells (#embargo-date, #embargo-time). The elements stay native
-   (type="date" and type="time"); they get the recessed field recipe above
-   (2px --edge border 4.74:1 on --desk, --desk-dark outer line, inner shadow,
-   --field fill) in the paper mono font. The parts inherit the mono font. */
+   (type="date" and type="time"); they get the field recipe above in the paper
+   mono font. The parts inherit the mono font. */
 input[type="date"],
 input[type="time"] {
   appearance: none;
@@ -456,11 +470,12 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper {
 }
 
 /* Themed icons: a calendar and a clock drawn as inline SVG data URIs, in the
-   --ink tone (the stroke %231B1915 is --ink; a data URI cannot read a custom
-   property, so this is the one allowed raw hex). --ink on --field is
-   15.81:1 (3:1 needed for UI). The Chromium picker indicator is restyled; it
-   stays the click target. Firefox shows its own icon, and the well, font and
-   border still apply. Size comes from --icon-size. */
+   --ink-field tone (the stroke %231C201A is --ink-field; a data URI cannot
+   read a custom property, so this is the one allowed raw hex).
+   --ink-field on --cream is 12.04:1 (3:1 needed for UI). The Chromium picker
+   indicator is restyled; it stays the click target. Firefox shows its own
+   icon, and the well, font and border still apply. Size comes from
+   --icon-size. */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
   box-sizing: content-box;
@@ -478,11 +493,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231B1915' stroke-width='1.5' stroke-linecap='square'%3E%3Crect x='2.5' y='4' width='15' height='13.5'/%3E%3Cpath d='M2.5 8.5h15M6.5 2v4M13.5 2v4'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231C201A' stroke-width='1.5' stroke-linecap='square'%3E%3Crect x='2.5' y='4' width='15' height='13.5'/%3E%3Cpath d='M2.5 8.5h15M6.5 2v4M13.5 2v4'/%3E%3C/svg%3E");
 }
 
 input[type="time"]::-webkit-calendar-picker-indicator {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231B1915' stroke-width='1.5' stroke-linecap='square'%3E%3Ccircle cx='10' cy='10' r='7.5'/%3E%3Cpath d='M10 5.5V10l3 2'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231C201A' stroke-width='1.5' stroke-linecap='square'%3E%3Ccircle cx='10' cy='10' r='7.5'/%3E%3Cpath d='M10 5.5V10l3 2'/%3E%3C/svg%3E");
 }
 
 /* Body textarea: exactly five lines. Paper mono font, line height of exactly
@@ -502,7 +517,7 @@ textarea {
 
 /* Priority: the native select, styled like the text inputs. The arrow is a
    bordered triangle on the wrapper (no image, no gradient). The native option
-   list is left alone. --ink on --field 15.81:1. */
+   list is left alone. */
 .select-wrap {
   position: relative;
 }
@@ -524,7 +539,7 @@ textarea {
   height: 0;
   border-left: var(--arrow-size) solid transparent;
   border-right: var(--arrow-size) solid transparent;
-  border-top: var(--arrow-size) solid var(--ink);
+  border-top: var(--arrow-size) solid var(--ink-field);
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -536,15 +551,14 @@ textarea {
   line-height: 1.25;
 }
 
-/* Form lock (design-pass-2, task 4). While a story is held, #form-fields is
-   disabled and .compose carries data-locked. The reason line is --paper on
-   --desk (8.27:1) with a 4px --accent left edge (5.19:1 on --desk). Dimming
-   never uses opacity, so contrast holds: labels and legends turn --desk-muted
-   on --desk (6.00:1), field text turns --muted on --field (6.76:1), and a
-   dashed --edge border (4.74:1 on --desk) marks the fields as inert, so
-   colour is not the only signal. Inert keys inside the form (Add claim,
-   Remove) drop their fill to the desk and use --desk-muted text on --desk
-   (6.00:1), like an inert feed key. */
+/* Form lock. While a story is held, #form-fields is disabled and .compose
+   carries data-locked. The reason line is --paper on --desk (9.06:1) with a
+   4px --accent left edge (3.93:1 on --desk, 3:1 needed). Dimming never uses
+   opacity, so contrast holds: labels and legends turn --desk-muted (6.59:1 on
+   --desk, 9.72:1 on --panel), field text turns --muted on --cream (5.49:1),
+   and a dashed border marks the fields as inert, so colour is not the only
+   signal. Inert keys inside the form (Add claim, Remove) drop their fill and
+   use --desk-muted text with a dashed --edge border, like an inert feed key. */
 .lock-reason {
   margin: 0 0 var(--space-3);
   padding: var(--space-2) var(--space-3);
@@ -571,6 +585,7 @@ textarea {
 .form-fields:disabled .btn {
   color: var(--desk-muted);
   background: transparent;
+  border-color: var(--edge);
   border-style: dashed;
   box-shadow: none;
   cursor: not-allowed;
@@ -580,56 +595,52 @@ textarea {
   border-top-color: var(--muted);
 }
 
-/* Keys. A secondary key is a small grey-green keycap: --paper on --key about
-   5.65:1, square 2px corners, a darker bottom edge drawn as an outer shadow
-   (it does not change the box size or the 44px target) and a 2px press. */
+/* Keys. A key is a brass keycap: --key-ink text and a 2px --key-ink border on
+   --brass (5.60:1), a 5px bottom edge (2px while pressed) and a highlight on
+   the top edge. At least 44px high. WHEN pressed it moves down 3px. The key
+   shape (--brass on --desk 3.93:1, on --panel 5.79:1) clears 3:1 for UI. */
 .btn {
   min-height: var(--tap);
   min-width: var(--tap);
   padding: var(--space-2) var(--space-4);
-  color: var(--paper);
-  background: var(--key);
-  border: var(--border-control) solid var(--edge);
-  border-radius: var(--radius-control);
-  box-shadow: 0 var(--key-edge) 0 var(--desk-dark);
+  color: var(--key-ink);
+  background: var(--brass);
+  border: var(--border-control) solid var(--key-ink);
+  border-bottom-width: var(--key-edge-bottom);
+  border-radius: var(--radius-key);
+  box-shadow: inset 0 2px 0 var(--brass-hi);
   font-size: 14px;
   cursor: pointer;
   transition:
     background-color var(--duration-fast),
     color var(--duration-fast),
-    transform var(--duration-fast),
-    box-shadow var(--duration-fast);
+    transform var(--duration-fast);
 }
 
+/* --key-ink on --brass-hi 9.65:1. */
 .btn:hover {
-  background: var(--ink);
+  background: var(--brass-hi);
 }
 
 .btn:active {
+  border-bottom-width: var(--key-edge-pressed);
   transform: translateY(var(--key-press));
-  box-shadow: 0 0 0 var(--desk-dark);
 }
 
-/* Print: the one big brass keycap. 3px dark bottom edge, 2px press. */
+/* Print: the cream keycap (--key-ink on --cream 11.78:1). */
 .btn--primary {
-  color: var(--ink);
-  background: var(--accent);
-  border-color: var(--brass-dark);
-  box-shadow: 0 var(--key-edge-print) 0 var(--brass-dark);
+  color: var(--key-ink);
+  background: var(--cream);
+  box-shadow: inset 0 2px 0 var(--sheet-hi);
   font-size: 16px;
   font-weight: bold;
 }
 
 .btn--primary:hover {
-  background: var(--accent);
+  background: var(--sheet-hi);
 }
 
-.btn--primary:active {
-  transform: translateY(var(--key-press));
-  box-shadow: 0 1px 0 var(--brass-dark);
-}
-
-/* The two example buttons are small secondary buttons. */
+/* The two example buttons are small keys. */
 .compose-examples > .btn {
   flex: 1 1 auto;
   padding: var(--space-1) var(--space-2);
@@ -638,9 +649,9 @@ textarea {
 }
 
 /* Held keys: "Release now" and "Cancel embargo" in the held area under the
-   warning strip. Ordinary secondary keys (--paper on --key 5.65:1, 2px --edge
-   border) sitting on the paper. The item sets white-space: pre, so the row
-   resets it to normal. Both keys are at least 44px high on every width. */
+   warning strip. Ordinary keys sitting on the paper. The item sets
+   white-space: pre, so the row resets it to normal. Both keys are at least
+   44px high on every width. */
 .hold-keys {
   display: flex;
   flex-wrap: wrap;
@@ -716,7 +727,7 @@ textarea {
 
 /* Action row: a bar stuck to the bottom of the viewport on phone. On desktop
    it is the last row of the form column, under the embargo fields.
-   --edge on --desk is 4.74:1 (3:1 needed for the boundary). */
+   --edge on --desk is 5.21:1 (3:1 needed for the boundary). */
 
 .actions {
   position: sticky;
@@ -747,11 +758,10 @@ textarea {
   }
 }
 
-/* Compact form from 900px: shorter controls (still above the 24px minimum hit
-   area) and tighter gaps. Print is a plain row at the bottom of the form
-   column, at most --print-h-max tall. The feed keys keep their own 44px
-   height (.btn.feed-key). */
-@media (min-width: 900px) {
+/* Compact form from 800px: shorter fields (still above the 24px minimum hit
+   area) and tighter gaps. Keys keep the full 44px tap size. Print is a plain
+   row at the bottom of the form column, at most --print-h-max tall. */
+@media (min-width: 800px) {
   .actions {
     position: static;
     flex: 0 0 auto;
@@ -766,21 +776,11 @@ textarea {
     max-height: var(--print-h-max);
   }
 
-  .btn {
-    min-height: var(--control-h-compact);
-    min-width: var(--control-h-compact);
-    padding-block: var(--space-1);
-  }
-
-  /* The held keys stay at the full tap size. */
-  .hold-keys > .btn {
-    min-height: var(--tap);
-  }
-
   /* Remove sits on the label line, so it stays short there. */
   .claim-row > .claim-remove {
-    min-height: 26px;
+    min-height: var(--space-6);
     padding-block: 0;
+    line-height: 1.1;
   }
 
   input,
@@ -819,8 +819,9 @@ textarea {
   }
 }
 
+/* Focus ring: 3px --amber, 2px offset (5.15:1 on --desk, 7.60:1 on --panel). */
 :focus-visible {
-  outline: 3px solid var(--accent);
+  outline: 3px solid var(--amber);
   outline-offset: 2px;
 }
 
@@ -877,8 +878,9 @@ textarea {
 
 /* The stage is the size container. The paper wrap sets the font size from the
    stage width (cq units resolve against an ancestor container, never the
-   element itself) and is exactly as wide as 69 columns plus padding, centred,
-   but never wider than the stage (max-width), so it cannot widen the page.
+   element itself) and is exactly as wide as 69 columns plus the sheet side
+   padding (which holds the sprocket-hole strips), centred, but never wider
+   than the stage (max-width), so it cannot widen the page.
    42.8 is 69 columns times 0.62em, a safe upper bound for the mono stack.
    The font floor is 12px: where 69 columns do not fit at 12px (a 390px phone),
    the paper box scrolls sideways inside itself and the page does not. */
@@ -890,7 +892,7 @@ textarea {
 }
 
 .paper-wrap {
-  width: calc(69ch + 2 * var(--paper-pad) + var(--scrollbar-room));
+  width: calc(69ch + 2 * var(--paper-pad-x) + var(--scrollbar-room));
   max-width: 100%;
   margin-inline: auto;
   margin-top: 0;
@@ -898,7 +900,7 @@ textarea {
   font-size: var(--paper-font-min);
   font-size: clamp(
     var(--paper-font-min),
-    calc((100cqi - 2 * var(--paper-pad) - var(--scrollbar-room)) / 42.8),
+    calc((100cqi - 2 * var(--paper-pad-x) - var(--scrollbar-room)) / 42.8),
     var(--paper-font-max)
   );
   line-height: 1.35;
@@ -938,7 +940,7 @@ textarea {
   min-height: var(--empty-min-height);
   padding: var(--paper-pad);
   color: var(--muted);
-  background: var(--paper);
+  background: var(--sheet);
   border-radius: 0 0 var(--radius-paper) var(--radius-paper);
   white-space: normal;
 }
@@ -950,14 +952,54 @@ textarea {
 /* One sheet per item. It is at least as wide as the roll and as wide as its
    longest line, so the paper colour stays behind the text when the roll
    scrolls sideways. The bottom edge is straight while the item prints. The
-   perforation and the torn edge come with .item--cut (printer.css). */
+   perforation and the torn edge come with .item--cut (printer.css).
+
+   Each sheet carries its own look (not .paper):
+   - Grain: two layered repeating-linear-gradients (0deg and 90deg) in --grain
+     (alpha 0.035) over the --sheet to --sheet-hi gradient.
+   - Sprocket holes: a strip down each side, drawn by ::before and ::after, so
+     the sheet text is untouched and stays selectable. Each strip is
+     --strip-w wide (30px, 24px under 800px), a radial-gradient hole every
+     28px. The sheet side padding is --paper-pad-x (strip, inset and 12px), so
+     holes never overlap wire text. The dashed edge is --perf. */
 .item {
+  position: relative;
   width: max-content;
   min-width: 100%;
-  padding: var(--paper-pad);
+  padding: var(--paper-pad) var(--paper-pad-x);
   color: var(--ink);
-  background: var(--paper);
+  background:
+    repeating-linear-gradient(0deg, var(--grain) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, var(--grain) 0 1px, transparent 1px 5px),
+    linear-gradient(var(--sheet), var(--sheet-hi));
   white-space: pre;
+}
+
+.item::before,
+.item::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--strip-w);
+  background: radial-gradient(
+      circle at 50% 14px,
+      var(--hole) 5px,
+      transparent 5.5px
+    )
+    0 0 / var(--strip-w) 28px repeat-y;
+  border: 0 dashed var(--perf);
+  pointer-events: none;
+}
+
+.item::before {
+  left: var(--strip-inset);
+  border-right-width: 1px;
+}
+
+.item::after {
+  right: var(--strip-inset);
+  border-left-width: 1px;
 }
 
 /* The desk shows between two sheets. */
@@ -971,17 +1013,23 @@ textarea {
   white-space: pre;
 }
 
+/* HOLD stamp geometry. It sits in the flow of the sheet (never positioned
+   over the text), with a margin that clears the corners of the rotated box:
+   the box is turned about -10deg, so each end swings about 0.09 times its
+   width up or down, which the margins above and below cover. It is the
+   largest, heaviest thing on a held sheet; the ticker digits come second.
+   The ink (crimson, double border, speckle) is in printer.css. */
 .stamp {
   display: inline-block;
-  margin: var(--space-2) 0 var(--space-4);
-  padding: var(--space-1) var(--space-2);
-  color: var(--stamp);
-  border: var(--border-stamp) solid var(--stamp);
+  margin: var(--space-5) 0 var(--space-6);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-stamp);
+  font-size: 1.6em;
   font-weight: bold;
+  line-height: 1.1;
   text-transform: uppercase;
   white-space: pre;
-  transform: rotate(-3deg);
+  transform: rotate(-10deg);
 }
 
 @media (prefers-reduced-motion: reduce) {

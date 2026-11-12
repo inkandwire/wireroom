@@ -5,14 +5,13 @@ fileMatchPattern: "drafts/*.json"
 
 # WireRoom: Source check
 
-When a draft in `drafts/` is in context, check that its source links resolve, using the `fetch` tool from the MCP `fetch` server.
+When a draft in `drafts/` is in context, run the offline source checker and report its output. It reads the URL text only and makes no network call.
 
-- Collect the distinct `sourceUrl` values of all claims in the draft.
-- Call `fetch` once per distinct URL, with `url` set to that URL and `max_length` set to 200.
-- End the answer with a short list, one line per URL: `<url>: RESOLVES` or `<url>: DOES NOT RESOLVE (<error>)`.
-- A claim with no `sourceUrl` is named as unsourced in the answer and is not fetched.
-- `example.com` links count as resolving, as in the examples.
-- If the fetch server cannot start, say the check could not run and list no URL as resolving.
-- If the `fetch` tool call fails at the permission step, say "CHECK NOT RUN" for each URL and never mark any URL as resolving.
-- Never edit a `sourceUrl`. Never make up a URL or suggest one.
-- This check runs in Kiro only. It does not change the claim gate, which still only checks that a URL is present.
+- Run `npm run sourcecheck` (or `node_modules/.bin/vite-node src/cli/claimgate.ts drafts`).
+- Read the output. It has one line per claim: `<file>: claim N "<text>" STATUS`, then a summary line. Exit code 1 means at least one claim is not `OK`.
+- Statuses: `OK`, `MISSING` (no URL), `MALFORMED` (unparseable, spaces, padding, or a host with no dot), `NOT_HTTPS` (any scheme other than https), `UNLISTED` (the draft has a `sources` array and the URL is not in it).
+- Name every non-`OK` claim in the answer with its status, and say what is wrong in plain words.
+- `OK` means the URL is well formed. It does not mean the link resolves, and say so if asked.
+- Never edit a `sourceUrl`. Never make up a URL or suggest one. Never fetch a URL.
+- The MCP `fetch` tool is optional, works in the IDE only, and is never required. Never run it headless or in a hook.
+- This check does not change the claim gate (`checkClaims`) or the embargo clock.

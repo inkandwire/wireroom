@@ -12,6 +12,11 @@ export {
 } from "./types";
 export { splitLongWord, wrapParagraph, wrapText } from "./wrap";
 export { checkClaims, isValidSourceUrl } from "./claimGate";
+export {
+  checkSourcesLocal,
+  type SourceStatus,
+  type SourceResult,
+} from "./sourceCheck";
 export { isReleased, parseInstant } from "./embargo";
 export { slugFromHeadline, formatDateline, composeWireItem } from "./compose";
 export { wireItemToJson } from "./wireJson";

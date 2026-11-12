@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "build": "vite build"
+    "build": "vite build",
+    "sourcecheck": "vite-node src/cli/claimgate.ts drafts"
   },
   "devDependencies": {
     "fast-check": "3.23.1",

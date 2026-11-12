@@ -1,52 +1,96 @@
 :root {
+  /* Base palette. --desk is the ink-look desk (wireroom-ink, task 1).
+     Hand-computed, WCAG 2.x: --paper on --desk 9.06:1, --desk-muted on --desk
+     6.59:1, --field on --desk 10.19:1, --edge on --desk 5.21:1. */
   --paper: #efe6cc;
   --ink: #1b1915;
-  --desk: #38433d;
-  --accent: #e3b04b;
+  --desk: #363d31;
   --stamp: #a82a1e;
   --muted: #5b5444;
   --desk-muted: #bfc8bf;
   --field: #f8f3e3;
   --edge: #b9b08f;
 
-  /* Held state (design-pass-2, task 3).
-     --stamp-deep: HOLD stamp border and text, warning mark and warning edge.
-     7.16:1 on --paper and 8.04:1 on --field (4.5:1 needed).
-     --ticker: fill of the countdown strip. --accent digits on it 9.48:1,
-     --paper on it 15.11:1, --desk-muted on it 10.96:1.
-     --stamp-speckle: the ink speckle on the stamp, the --stamp-deep tone at
-     low alpha (small dots only, decoration).
+  /* Ink look (wireroom-ink, task 1). Every new colour is a token.
+     --panel: dark compose column (from 800px wide).
+     --cream: input fill and the Print key. --ink-field: field text and field
+     border. --ring: lighter 2px outer ring of a field.
+     --brass, --brass-hi, --brass-dark: keys, caps, rivets, badge.
+     --key-ink: text and border of a key.
+     --steel-hi, --steel, --steel-lo: raised printer housing and tray lip.
+     --well: housing border, tray well, key shadow.
+     --hole: sprocket holes. --perf: dashed perforation beside the holes.
+     --sheet, --sheet-hi: printer paper gradient.
+     --bezel: ticker bezel. --amber: ticker digits and focus ring.
+     --crimson: HOLD stamp.
+     Contrast (hand-computed, WCAG 2.x), text 4.5:1, borders and UI 3:1:
+     --ink-field on --cream 12.04:1; --cream on --panel 12.18:1 and on --desk
+     8.25:1; --ring on --panel 4.55:1 and on --desk 3.09:1; --key-ink on
+     --brass 5.60:1, on --brass-hi 9.65:1, on --cream 11.78:1; --brass on
+     --desk 3.93:1 and on --panel 5.79:1; --brass-hi on --desk 6.77:1 and on
+     --panel 9.98:1; --amber on --bezel 8.13:1, on --panel 7.60:1, on --desk
+     5.15:1; --crimson on --sheet 4.54:1; --ink on --sheet 14.6:1; --muted on
+     --sheet 6.26:1 and on --cream 5.49:1; --paper on --bezel 14.31:1;
+     --desk-muted on --bezel 10.41:1, on --panel 9.72:1, on --desk-dark 8.46:1.
+     --hole, --perf, --steel*, --well, --roller-* carry no text (decoration). */
+  --panel: #1b1f19;
+  --cream: #e5dcbe;
+  --ink-field: #1c201a;
+  --ring: #8c8668;
+  --brass: #b89255;
+  --brass-hi: #e0c58e;
+  --brass-dark: #7c6234;
+  --key-ink: #1f2123;
+  --steel-hi: #6a7064;
+  --steel: #4a4f46;
+  --steel-lo: #2a2e27;
+  --well: #0e100c;
+  --hole: #3a3d34;
+  --perf: #cfc4a0;
+  --sheet: #f2ead0;
+  --sheet-hi: #faf4de;
+  --bezel: #1a1710;
+  --amber: #eaa023;
+  --crimson: #c72e24;
+
+  /* --accent is the brass of the keys, the badge and the lock reason edge
+     (3:1 needed for UI: --brass on --desk 3.93:1). Text on it is --key-ink. */
+  --accent: var(--brass);
+
+  /* Held state.
+     --stamp-deep: warning mark and warning edge, 8.04:1 on --field.
+     --ticker: the ticker bezel colour (same as --bezel).
+     --stamp-speckle: the ink speckle on the stamp, the --crimson tone at low
+     alpha (small dots only, decoration).
      Hand-computed, WCAG 2.x. */
   --stamp-deep: #8f1d14;
-  --ticker: #14110d;
-  --stamp-speckle: rgba(143, 29, 20, 0.18);
-
-  /* Small grey-green key (secondary buttons, mute toggle). --paper on --key
-     is about 5.65:1 (4.5:1 needed). The key edge is --edge on --desk (4.74:1,
-     3:1 needed). Hand-computed, WCAG 2.x. */
-  --key: #4f5c54;
+  --ticker: var(--bezel);
+  --stamp-speckle: rgba(199, 46, 36, 0.18);
 
   /* Printer slot band, a darker shade of --desk. Decorative, carries no text
      and no information, so it needs no contrast ratio of its own.
-     Hand-computed (WCAG 2.x): about 1.4:1 against --desk, and --paper on it
-     is about 10.8:1 (more than --paper on --desk, 8.27:1). */
+     Hand-computed (WCAG 2.x): about 1.3:1 against --desk, and --paper on it
+     is about 10.8:1. */
   --desk-dark: #232b26;
 
-  /* Printer housing and platen (task 3). All decorative: no text sits on the
-     roller or caps. The printer bar uses --desk-dark with --paper text
-     (about 10.8:1) and the plate uses --ink on --accent (8.84:1). Gradients
-     only, no images. */
-  --brass-dark: #9a7220;
+  /* Printer housing and platen. All decorative: no text sits on the roller or
+     caps. The printer bar uses --desk-dark with --paper text (about 10.8:1)
+     and the plate uses --key-ink on --brass (5.60:1). Gradients only, no
+     images.
+     --platen-h: 56 to 64px, taller than a 44px key. --cap-h: height of a
+     brass end cap. --rivet-size: 12px. */
   --roller-hi: #4a4f4b;
   --roller-mid: #232826;
-  --roller-lo: #0f1210;
+  --roller-lo: #141516;
   --shadow-ink: rgba(15, 18, 16, 0.45);
-  --radius-housing: 2px;
+  --radius-housing: 8px;
   --radius-bar: 4px;
+  --radius-roller: 8px 8px 0 0;
   --slot-overlap: 6px;
-  --platen-h: 28px;
-  --cap-w: 14px;
-  --printer-max-w: 760px;
+  --platen-h: 60px;
+  --cap-w: 28px;
+  --cap-h: 40px;
+  --printer-max-w: 860px;
 
   --font-paper: "Courier New", Courier, "Liberation Mono", "DejaVu Sans Mono",
     ui-monospace, monospace;
@@ -63,6 +107,8 @@
   --radius-paper: 1px;
   --radius-control: 2px;
   --radius-stamp: 3px;
+  --radius-key: 5px;
+  --radius-panel: 6px;
 
   --border-control: 2px;
   --border-stamp: 3px;
@@ -73,8 +119,14 @@
 
   /* Paper geometry. The paper is 69 columns of text plus this padding, plus
      room for a classic vertical scrollbar so the lines never need a sideways
-     scroll just because the roll scrolls. */
+     scroll just because the roll scrolls. --paper-pad is the vertical padding
+     of a sheet. The sides reserve the sprocket-hole strip (--strip-w) plus its
+     inset and 12px, so holes never overlap wire text. The strip is 24px wide
+     under 800px (see the media query at the end of this block). */
   --paper-pad: var(--space-4);
+  --strip-w: 30px;
+  --strip-inset: 6px;
+  --paper-pad-x: calc(var(--strip-w) + var(--strip-inset) + var(--space-3));
   --scrollbar-room: var(--space-4);
   --slot-height: 8px;
 
@@ -92,6 +144,9 @@
 
   /* Empty-state message height. The printed sheets size to their content. */
   --empty-min-height: calc(2 * var(--space-7));
+
+  /* Paper grain: ink at very low alpha (0.035), decoration only. */
+  --grain: rgba(27, 25, 21, 0.035);
 
   /* Torn bottom edge of a finished sheet: a zigzag with 50 teeth across the
      width and a tooth height of 6px. The polygon runs along the top, down the
@@ -209,8 +264,8 @@
      label). Fixed so filling it does not shift layout. */
   --tools-width: 176px;
 
-  /* Layout (task 2 and fix pass 1).
-     --control-h-compact: control height from 900px width up (above the 24px
+  /* Layout.
+     --control-h-compact: field height from 800px width up (above the 24px
      minimum hit area). --claim-row-h: height of one stacked claim row.
      --nameplate-h: desktop nameplate height.
      --claims-min-h: the claims list never gets shorter than this; it gives up
@@ -228,24 +283,32 @@
   --print-h-max: 48px;
   --short-viewport: 800px;
 
-  /* Paper tray and rivets (design-pass-2, task 1). Decorative only, no text
-     sits on them. The tray height is a target; it shrinks to its minimum
-     before the paper roll gives up space. */
+  /* Paper tray and rivets. Decorative only, no text sits on them. The tray
+     height is a target; it shrinks to its minimum before the paper roll gives
+     up space. */
   --tray-h: 72px;
   --tray-min-h: 40px;
-  --rivet-size: var(--space-2);
+  --rivet-size: 12px;
+  --rivet-inset: 8px;
+  --housing-pad-x: var(--space-5);
 
-  /* Date and time wells and the feed key toolbar (design-pass-2, task 2).
-     No new colours: the icons are drawn in the --ink tone (see the SVG data
-     URIs in style.css), the keys reuse --key, --paper and --edge.
+  /* Date and time wells and the feed key toolbar.
      --icon-size: width and height of the calendar and clock icons.
      --feed-key-pad-x: horizontal padding of a feed key, a little tighter than
      a normal .btn so three keys fit in one row on the printer bar. */
   --icon-size: 20px;
   --feed-key-pad-x: var(--space-3);
 
-  /* Keys (task 4): the keycap bottom edge and the press travel. */
-  --key-edge: 2px;
-  --key-edge-print: 3px;
-  --key-press: 2px;
+  /* Keys: brass face, 2px --key-ink border, a 5px bottom edge (2px while
+     pressed) and a 3px press travel. */
+  --key-edge-bottom: 5px;
+  --key-edge-pressed: 2px;
+  --key-press: 3px;
+}
+
+/* Phone: a narrower sprocket strip, so the sheet side padding shrinks too. */
+@media (max-width: 799px) {
+  :root {
+    --strip-w: 24px;
+  }
 }

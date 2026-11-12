@@ -1,11 +1,11 @@
-// Thin fs and exit-code wrapper around formatReport. Run with:
+// Thin fs and exit-code wrapper around formatSourceReport. Run with:
 //   node_modules/.bin/vite-node src/cli/claimgate.ts drafts
 // The project has no @types/node, so the Node imports are untyped on purpose.
 // @ts-ignore
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 // @ts-ignore
 import { join } from "node:path";
-import { formatReport, type ReportFile } from "./report";
+import { formatSourceReport, type ReportFile } from "./report";
 
 const proc = (globalThis as unknown as {
   process: {
@@ -37,7 +37,7 @@ function readDrafts(dir: string): ReportFile[] {
 }
 
 const dir = proc.argv[2] ?? "drafts";
-const report = formatReport(readDrafts(dir));
+const report = formatSourceReport(readDrafts(dir));
 if (report.stdout !== "") {
   proc.stdout.write(report.stdout);
 }
