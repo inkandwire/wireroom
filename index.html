@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WireRoom</title>
+    <script type="module" crossorigin src="./assets/index-B6-hsnLU.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DR1W_0cK.css">
+  </head>
+  <body>
+    <header class="nameplate">
+      <h1 class="nameplate-title">WireRoom</h1>
+      <p class="nameplate-tagline">Launch wire. Every claim sourced.</p>
+    </header>
+
+    <main class="app">
+      <section class="compose" aria-labelledby="compose-title">
+        <div class="compose-head" title="Made-up sample data, example.com links.">
+          <h2 id="compose-title">Compose</h2>
+          <span class="visually-hidden" id="examples-hint">Made-up sample data, example.com links.</span>
+          <div class="compose-examples">
+            <button type="button" id="example-sourced" class="btn" aria-describedby="examples-hint">Example: all claims sourced</button>
+            <button type="button" id="example-unsourced" class="btn" aria-describedby="examples-hint">Example: one claim unsourced</button>
+          </div>
+          <div class="compose-demo" role="group" aria-label="Demo">
+            <span class="compose-demo-label" aria-hidden="true">Demo</span>
+            <button type="button" id="demo-unsourced" class="btn">Try: launch with an unsourced claim</button>
+            <button type="button" id="demo-sourced" class="btn">Try: launch fully sourced</button>
+          </div>
+        </div>
+
+        <form id="compose-form" novalidate>
+          <!-- Visible reason while a story is held. Text is set by main.ts. -->
+          <p id="lock-reason" class="lock-reason" hidden></p>
+          <!-- All form fields sit in this fieldset. main.ts disables it while a
+               story is held. The ids inside do not change. -->
+          <fieldset id="form-fields" class="form-fields">
+            <div class="field-pair">
+              <div class="field">
+                <label for="city">Dateline city</label>
+                <input id="city" name="city" type="text" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label for="priority">Priority</label>
+                <div class="select-wrap">
+                  <select id="priority" name="priority">
+                    <option value="FLASH">FLASH</option>
+                    <option value="BULLETIN">BULLETIN</option>
+                    <option value="URGENT">URGENT</option>
+                    <option value="ROUTINE" selected>ROUTINE</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="headline">Headline</label>
+              <input id="headline" name="headline" type="text" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="body">Body</label>
+              <textarea id="body" name="body" rows="5" aria-describedby="body-hint"></textarea>
+              <span class="visually-hidden" id="body-hint">Blank line between paragraphs.</span>
+            </div>
+
+            <fieldset class="claims">
+              <legend>Claims</legend>
+              <p class="hint" id="claims-hint">Each claim needs a source URL.</p>
+              <div id="claims" aria-describedby="claims-hint"></div>
+              <button type="button" id="add-claim" class="btn">Add claim</button>
+            </fieldset>
+
+            <fieldset class="embargo" title="UTC, empty date: release now.">
+              <legend>Embargo</legend>
+              <span class="visually-hidden" id="embargo-hint">Optional. UTC, empty date: release now.</span>
+              <div class="field-pair">
+                <div class="field">
+                  <label for="embargo-date">Embargo date (UTC)</label>
+                  <input id="embargo-date" name="embargoDate" type="date" aria-describedby="embargo-hint" />
+                </div>
+                <div class="field">
+                  <label for="embargo-time">Embargo time (UTC)</label>
+                  <input id="embargo-time" name="embargoTime" type="time" aria-describedby="embargo-hint" />
+                </div>
+              </div>
+            </fieldset>
+          </fieldset>
+        </form>
+
+        <!-- Action row. Print belongs to the form through its form attribute.
+             On desktop it sits at the bottom of the form column, under the
+             embargo fields. On phone it is a bar stuck to the viewport bottom. -->
+        <div class="actions" role="group" aria-label="Actions">
+          <div class="actions-main">
+            <button type="submit" form="compose-form" id="print" class="btn btn--primary">Print</button>
+            <button type="button" id="print-instantly" class="btn" hidden>Print instantly</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="printer" aria-labelledby="printer-title">
+        <div class="printer-body">
+          <!-- Four brass rivets, one near each corner. Decoration only. -->
+          <i class="rivet rivet--tl" aria-hidden="true"></i>
+          <i class="rivet rivet--tr" aria-hidden="true"></i>
+          <i class="rivet rivet--bl" aria-hidden="true"></i>
+          <i class="rivet rivet--br" aria-hidden="true"></i>
+          <div class="printer-bar">
+            <h2 id="printer-title">Printer</h2>
+            <!-- src/ui/main.ts puts the BELL label before this toolbar (outside
+                 it) and the three feed keys inside it: Mute, Export RSS,
+                 Export JSON feed. -->
+            <div id="nameplate-tools" class="nameplate-tools" role="toolbar" aria-label="Feed keys"></div>
+          </div>
+          <div id="notice" class="notice" role="alert" tabindex="-1"></div>
+          <div class="platen" aria-hidden="true"><i class="platen-cap"></i><i class="platen-roll"></i><i class="platen-cap"></i></div>
+          <div class="paper-stage">
+            <div class="paper-wrap">
+              <div class="paper-slot" aria-hidden="true"></div>
+              <div id="paper" class="paper" role="region" aria-live="off" aria-label="Printed wire items, scrolls sideways and down" tabindex="0">
+                <div id="empty" class="empty">
+                  <p>Nothing printed yet.</p>
+                  <p>Fill in the form and press Print, or try an example.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Paper tray: catches the printed paper. Decoration only. -->
+          <div class="paper-tray" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <div id="status" class="visually-hidden" role="status" aria-live="polite"></div>
+    </main>
+  </body>
+</html>
