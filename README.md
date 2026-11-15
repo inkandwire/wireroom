@@ -33,7 +33,8 @@ Non-interactive runs cannot trust the tool without `--trust-all-tools` (which al
 - Specs (requirements, design, tasks) that Kiro implemented: `.kiro/specs/` (wire-composer, wire-fixes, teletype-ui, teletype-polish, embargo-clock, feeds, hook-node, mcp-source-lookup, wireroom-ink, design-pass-2).
 - Agent hook: `.kiro/hooks/claim-gate-on-save.json`.
 - MCP: `.kiro/settings/mcp.json` (`fetch` server).
-- Kiro wrote the application code under `src/` from those specs.
+- Kiro wrote the application code under `src/` from those specs, except the one change below.
+- Hype-word flag (`src/core/hype.ts`, `src/core/hype.test.ts`): its requirements and design were written with Kiro CLI in spec mode during the hackathon (`.kiro/specs/hype-word-flagging/`). The Kiro CLI session was stopped after the design step to stay within a small credit budget set for it, so there is no `tasks.md`. The detector (the design's Phase 1) and its tests were written by hand. The UI warning panel (the design's Phase 2) is not built yet.
 
 ## New work and third-party code
 
