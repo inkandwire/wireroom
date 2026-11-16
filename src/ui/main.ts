@@ -284,6 +284,7 @@ function onClockRelease(one: ReleasedOne): void {
   itemEl?.querySelector(".stamp")?.classList.add("stamp--lifted");
   const label = itemEl?.querySelector(".countdown-label");
   if (label) label.textContent = "RELEASED";
+  itemEl?.querySelector(".ticker-title")?.remove(); // else it reads "RELEASE IN RELEASED"
   itemEl?.querySelector(".hold-warning")?.remove();
   itemEl?.querySelector(".hold-keys")?.remove();
 
