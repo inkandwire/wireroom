@@ -2,7 +2,7 @@
 
 The 1970s newswire teletype, back from the dead as a launch wire for founders.
 Type your news; it prints in wire style, and every claim needs a source before release.
-Built with Kiro (see `.kiro/`). Licence: MIT.
+Built with Kiro; its specs, steering, hook and MCP config live in `.kiro/`. MIT licence.
 
 ## Agent hook
 
@@ -27,7 +27,7 @@ Non-interactive runs cannot trust the tool without `--trust-all-tools` (which al
 - Demo video: {VIDEO_URL}
 - Run it yourself: `npm install`, then `npm test` (261 tests), `npm run build`, and open `dist/index.html` through any static server. It is fully static (Vite, base `./`), makes no network calls and needs no account or key. The `fetch` MCP server is a Kiro dev tool only; the app never uses it.
 
-## How Kiro was used
+## Kiro in this repo
 
 - Steering: `.kiro/steering/` (product, tech, structure, design, source-check).
 - Specs (requirements, design, tasks) that Kiro implemented: `.kiro/specs/` (wire-composer, wire-fixes, teletype-ui, teletype-polish, embargo-clock, feeds, hook-node, mcp-source-lookup, wireroom-ink, design-pass-2).
