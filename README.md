@@ -23,9 +23,9 @@ Non-interactive runs cannot trust the tool without `--trust-all-tools` (which al
 
 ## Try it
 
-- Live app: {LIVE_URL}
+- Live app: https://inkandwire.github.io/wireroom/
 - Demo video: {VIDEO_URL}
-- Run it yourself: `npm install`, then `npm test` (249 tests), `npm run build`, and open `dist/index.html` through any static server. It is fully static (Vite, base `./`), makes no network calls and needs no account or key. The `fetch` MCP server is a Kiro dev tool only; the app never uses it.
+- Run it yourself: `npm install`, then `npm test` (261 tests), `npm run build`, and open `dist/index.html` through any static server. It is fully static (Vite, base `./`), makes no network calls and needs no account or key. The `fetch` MCP server is a Kiro dev tool only; the app never uses it.
 
 ## How Kiro was used
 
@@ -33,8 +33,8 @@ Non-interactive runs cannot trust the tool without `--trust-all-tools` (which al
 - Specs (requirements, design, tasks) that Kiro implemented: `.kiro/specs/` (wire-composer, wire-fixes, teletype-ui, teletype-polish, embargo-clock, feeds, hook-node, mcp-source-lookup, wireroom-ink, design-pass-2).
 - Agent hook: `.kiro/hooks/claim-gate-on-save.json`.
 - MCP: `.kiro/settings/mcp.json` (`fetch` server).
-- Kiro wrote the application code under `src/` from those specs, except the one change below.
-- Hype-word flag (`src/core/hype.ts`, `src/core/hype.test.ts`): its requirements and design were written with Kiro CLI in spec mode during the hackathon (`.kiro/specs/hype-word-flagging/`). The Kiro CLI session was stopped after the design step to stay within a small credit budget set for it, so there is no `tasks.md`. The detector (the design's Phase 1) and its tests were written by hand. The UI warning panel (the design's Phase 2) is not built yet.
+- Kiro wrote the application code under `src/` from those specs, except the two changes below.
+- Hype-word flag (`src/core/hype.ts`, `src/core/hype.test.ts`): its requirements and design were written with Kiro CLI in spec mode during the hackathon (`.kiro/specs/hype-word-flagging/`). The Kiro CLI session was stopped after the design step to stay within a small credit budget, so there is no `tasks.md`. The detector (the design's Phase 1) and its tests were written outside Kiro, as was a one-line ticker fix in `src/ui/main.ts` with its test. The UI warning panel (the design's Phase 2) is not built yet.
 
 ## New work and third-party code
 
